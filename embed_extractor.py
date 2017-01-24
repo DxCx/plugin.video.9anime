@@ -113,6 +113,7 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
         regex_url = __relative_url(url, regex_url)
         if double_ref:
             req = urllib2.Request(regex_url)
+            req.get_method = lambda : 'HEAD'
             req.add_header('User-Agent', _USER_AGENT)
             req.add_header('Referer', url)
             video_url = urllib2.urlopen(req).geturl()
