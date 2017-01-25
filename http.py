@@ -4,6 +4,8 @@ import ssl
 import httplib
 import socket
 
+_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
+
 class HeadRequest(urllib2.Request):
     def get_method(self):
         return "HEAD"
@@ -65,25 +67,21 @@ class HTTPSHandler(urllib2.HTTPSHandler):
     def https_open(self, req):
         return self.do_open(NoCertSSLCon,req)
 
+def _process_request(req, set_request=None):
+    opener = urllib2.build_opener(HTTPSHandler)
+    req.add_header('User-Agent', _USER_AGENT)
+    if set_request:
+        req = set_request(req)
+
+    return opener.open(req)
+
 def send_request(url, data=None, set_request=None):
     if data:
         data = urllib.urlencode(data)
         req = urllib2.Request(url, data)
     else:
         req = urllib2.Request(url)
-
-    opener = urllib2.build_opener(HTTPSHandler)
-    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36')
-    if set_request:
-        req = set_request(req)
-
-    return opener.open(req)
+    return _process_request(req, set_request)
 
 def head_request(url, set_request=None):
-    req = HeadRequest(url)
-    opener = urllib2.build_opener(HTTPSHandler)
-    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36')
-    if set_request:
-        req = set_request(req)
-
-    return opener.open(req)
+    return _process_request(HeadRequest(url), set_request)
