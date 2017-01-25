@@ -1,3 +1,4 @@
+import re
 import sys
 import xbmc
 import xbmcaddon
@@ -10,7 +11,7 @@ except:
     import storageserverdummy as StorageServer
 
 HANDLE=int(sys.argv[1])
-ADDON_NAME = 'plugin.video.animeram'
+ADDON_NAME = re.findall('plugin:\/\/([\w\d\.]+)\/', sys.argv[0])[0]
 __settings__ = xbmcaddon.Addon(ADDON_NAME)
 __language__ = __settings__.getLocalizedString
 CACHE = StorageServer.StorageServer("%s.animeinfo" % ADDON_NAME, 24)
