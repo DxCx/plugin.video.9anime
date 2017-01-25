@@ -116,15 +116,17 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             print compiled_regex.findall(content)
             raise
 
-        regex_url = compiled_regex.findall(content)[match]
-        regex_url = __relative_url(url, regex_url)
-        if double_ref:
-            video_url = utils.head_request(regex_url, __set_referer(url)).geturl()
-        else:
-            video_url = regex_url
-        video_url = __relative_url(regex_url, video_url)
-
-        return video_url
+        try:
+            regex_url = compiled_regex.findall(content)[match]
+            regex_url = __relative_url(url, regex_url)
+            if double_ref:
+                video_url = utils.head_request(regex_url, __set_referer(url)).geturl()
+            else:
+                video_url = __relative_url(regex_url, regex_url)
+            return video_url
+        except Exception, e:
+            print "[*E*] Failed to load link: %s: %s" % (url, e)
+            return None
     return f
 
 __register_extractor("http://auengine.com/",
