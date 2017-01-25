@@ -1,4 +1,5 @@
 from . import embed_extractor
+from http import URLError, send_request, head_request
 
 def allocate_item(name, url, is_dir=False, image=''):
     new_res = {}
