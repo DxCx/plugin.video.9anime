@@ -3,13 +3,14 @@ import urllib
 import urllib2
 import urlparse
 
+_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
 _EMBED_EXTRACTORS = {}
 
 def load_video_from_url(in_url):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
 
     req = urllib2.Request(in_url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36')
+    req.add_header('User-Agent', _USER_AGENT)
     page_content = urllib2.urlopen(req).read()
     embeded_url = IFRAME_RE.findall(page_content)[0]
     if embeded_url.startswith("//"):
@@ -70,7 +71,7 @@ def __extract_swf_player(url, content):
     req = urllib2.Request(token_url)
     req.add_header('Referer', url)
     req.add_header('X-Requested-With', 'ShockwaveFlash/19.0.0.226')
-    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36')
+    req.add_header('User-Agent', _USER_AGENT)
     video_info = dict(urlparse.parse_qsl(urllib2.urlopen(req).read()))
 
     if video_info.has_key("error_msg"):
@@ -112,7 +113,8 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
         regex_url = __relative_url(url, regex_url)
         if double_ref:
             req = urllib2.Request(regex_url)
-            req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36')
+            req.get_method = lambda : 'HEAD'
+            req.add_header('User-Agent', _USER_AGENT)
             req.add_header('Referer', url)
             video_url = urllib2.urlopen(req).geturl()
         else:

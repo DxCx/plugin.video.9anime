@@ -3,6 +3,7 @@ import unittest
 import utils
 
 TESTED_SOURCES = [
+    ('[SUBBED] ABVideo', 'http://ww1.animeram.cc/one-piece/773/1'),
     ('[SUBBED] ABVideo', 'http://ww1.animeram.cc/naruto-shippuden/1/1'),
     ('[DUBBED] [HD] ABVideo', 'http://ww1.animeram.cc/naruto-shippuden/1/2'),
     ('[SUBBED] novamov', 'http://ww1.animeram.cc/naruto-shippuden/1/4'),
