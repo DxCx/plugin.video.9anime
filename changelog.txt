@@ -1,0 +1,23 @@
+[B]0.0.6[/B]
+- Aligned the crawler once again after websites were updated
+- Added Unit-Tests for faster development
+
+[B]0.0.5[/B]
+- Removed the option to disable image extracting -> not needed anymore.
+- Aligned the crawler after website was updated
+
+[B]0.0.4[/B]
+- Added new option to disable image extracting (Reduce time)
+
+[B]0.0.3[/B]
+- Added support for 2 more sources: VideoWeed and NovaMov
+- Added support for cache
+- Added Hebrew localization
+- Added localization support
+
+[B]0.0.2[/B]
+- Fixed streaming experience
+- Refactored the code for better understanding
+
+[B]0.0.1[/B]
+- Initial release
