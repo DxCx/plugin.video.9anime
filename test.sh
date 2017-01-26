@@ -1,2 +1,2 @@
 #!/bin/bash
-green -vv
+green -vvv test
