@@ -1,13 +1,13 @@
 #!/usr/local/bin/python2
 import unittest
-from resources.lib.AnimeramBrowser import AnimeramBrowser
+from resources.lib.NineAnimeBrowser import NineAnimeBrowser
 
 __all__ = [ "TestBrowser" ]
 
 class TestBrowser(unittest.TestCase):
     def __init__(self, *args, **kargs):
         super(TestBrowser, self).__init__(*args, **kargs)
-        self.browser = AnimeramBrowser()
+        self.browser = NineAnimeBrowser()
 
     def test_get_latest(self):
         "get_latest resturns at least 10 items"

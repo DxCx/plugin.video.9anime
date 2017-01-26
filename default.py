@@ -2,7 +2,7 @@ from resources.lib.ui import control
 from resources.lib.ui import utils
 from resources.lib.ui.SourcesList import SourcesList
 from resources.lib.ui.router import route, router_process
-from resources.lib.AnimeramBrowser import AnimeramBrowser
+from resources.lib.NineAnimeBrowser import NineAnimeBrowser
 
 AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
@@ -13,18 +13,24 @@ MENU_ITEMS = [
 
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
-    return control.draw_items(AnimeramBrowser().get_anime_episodes(animeurl))
+    return control.draw_items(NineAnimeBrowser().get_anime_episodes(animeurl))
 
 @route('latest')
 def LATEST(payload):
-    return control.draw_items(AnimeramBrowser().get_latest())
+    return control.draw_items(NineAnimeBrowser().get_latest())
 
 @route('search')
 def SEARCH(payload):
     query = control.keyboard(control.lang(30002))
     if query:
-        return control.draw_items(AnimeramBrowser().search_site(query))
+        return control.draw_items(NineAnimeBrowser().search_site(query))
     return False
+
+@route('search/*')
+def SEARCH(payload):
+    query, page = payload.lsplit("/", 1)
+    return control.draw_items(NineAnimeBrowser().search_site(query,
+                                                            int(page)))
 
 @route('all')
 def LIST_ALL_AB(payload):
@@ -33,11 +39,11 @@ def LIST_ALL_AB(payload):
 @route('all/*')
 def SHOW_AB_LISTING(payload):
     assert payload in AB_LIST, "Bad Param"
-    return control.draw_items(AnimeramBrowser().get_anime_list(payload))
+    return control.draw_items(NineAnimeBrowser().get_anime_list(payload))
 
 @route('play/*')
 def PLAY(url):
-    s = SourcesList(AnimeramBrowser().get_episode_sources(url), {
+    s = SourcesList(NineAnimeBrowser().get_episode_sources(url), {
                         'title': control.lang(30100),
                         'processing': control.lang(30101),
                         'choose': control.lang(30102),
