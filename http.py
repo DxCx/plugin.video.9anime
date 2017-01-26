@@ -6,6 +6,11 @@ import socket
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3.exceptions import InsecurePlatformWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
+
 import ssl
 
 _USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
@@ -22,7 +27,7 @@ class PrepReq(object):
     def __init__(self):
         self._dict = {}
 
-    def add_headers(self, key, value):
+    def add_header(self, key, value):
         self._dict[key] = value
 
     @property
