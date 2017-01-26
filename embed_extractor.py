@@ -21,14 +21,14 @@ def __set_flash(url):
 def load_video_from_url(in_url):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
 
-    page_content = http.send_request(in_url).read()
+    page_content = http.send_request(in_url).text
     embeded_url = IFRAME_RE.findall(page_content)[0]
     if embeded_url.startswith("//"):
         embeded_url = "http:%s" % embeded_url
     try:
         print "Probing source: %s" % embeded_url
         reqObj = http.send_request(embeded_url)
-        page_content = reqObj.read()
+        page_content = reqObj.text
     except http.URLError:
         return None # Dead link, Skip result
     except:
@@ -79,7 +79,7 @@ def __extract_swf_player(url, content):
     token_url = "%s/api/player.api.php?%s" % (domain, urllib.urlencode(data))
 
     video_info_res = http.send_request(token_url, set_request=__set_flash(url))
-    video_info = dict(urlparse.parse_qsl(video_info_res.read()))
+    video_info = dict(urlparse.parse_qsl(video_info_res.text))
 
     if video_info.has_key("error_msg"):
         print "[*] Error Message: %s" % (video_info["error_msg"])
