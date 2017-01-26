@@ -25,10 +25,10 @@ class TestBrowser(unittest.TestCase):
         search_res = self.browser.search_site("Dragon")
         self.assertEqual(len(search_res), 33)
         self.assertEqual(search_res[-1], {
-            'name': 'Next Page (1/4)',
+            'name': 'Next Page (2/4)',
             'is_dir': True,
             'image': None,
-            'url': 'search/Dragon/1'
+            'url': 'search/Dragon/2'
         })
 
     #def test_get_latest(self):

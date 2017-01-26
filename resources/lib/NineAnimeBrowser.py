@@ -40,7 +40,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         name = "Next Page (%d/%d)" % (next_page, total_pages)
         return [utils.allocate_item(name, base_url % next_page, True, None)]
 
-    def search_site(self, search_string, page=0):
+    def search_site(self, search_string, page=1):
         url = self._to_url("search?%s" % urllib.urlencode({
             "keyword": search_string,
             "page": page,
