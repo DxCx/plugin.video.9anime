@@ -22,7 +22,7 @@ class PrepReq(object):
     def __init__(self):
         self._dict = {}
 
-    def add_headers(self, key, value):
+    def add_header(self, key, value):
         self._dict[key] = value
 
     @property

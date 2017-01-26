@@ -35,7 +35,7 @@ def load_video_from_url(in_url):
         raise
     for extractor in _EMBED_EXTRACTORS.keys():
         if embeded_url.startswith(extractor):
-            return _EMBED_EXTRACTORS[extractor](reqObj.geturl(), page_content)
+            return _EMBED_EXTRACTORS[extractor](reqObj.url, page_content)
     print "[*E*] No extractor found for %s" % embeded_url
     return None
 
@@ -120,7 +120,7 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             regex_url = compiled_regex.findall(content)[match]
             regex_url = __relative_url(url, regex_url)
             if double_ref:
-                video_url = utils.head_request(regex_url, __set_referer(url)).geturl()
+                video_url = utils.head_request(regex_url, __set_referer(url)).url
             else:
                 video_url = __relative_url(regex_url, regex_url)
             return video_url
