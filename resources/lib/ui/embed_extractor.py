@@ -1,31 +1,41 @@
 import re
 import urllib
-import urllib2
 import urlparse
+import utils
+import http
 
-_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
 _EMBED_EXTRACTORS = {}
+
+def __set_referer(url):
+    def f(req):
+        req.add_header('Referer', url)
+        return req
+    return f
+
+def __set_flash(url):
+    def f(req):
+        req.add_header('X-Requested-With', 'ShockwaveFlash/19.0.0.226')
+        return __set_referer(url)(req)
+    return f
 
 def load_video_from_url(in_url):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
 
-    req = urllib2.Request(in_url)
-    req.add_header('User-Agent', _USER_AGENT)
-    page_content = urllib2.urlopen(req).read()
+    page_content = http.send_request(in_url).text
     embeded_url = IFRAME_RE.findall(page_content)[0]
     if embeded_url.startswith("//"):
         embeded_url = "http:%s" % embeded_url
     try:
         print "Probing source: %s" % embeded_url
-        reqObj = urllib2.urlopen(embeded_url)
-        page_content = reqObj.read()
-    except urllib2.URLError:
+        reqObj = http.send_request(embeded_url)
+        page_content = reqObj.text
+    except http.URLError:
         return None # Dead link, Skip result
     except:
         raise
     for extractor in _EMBED_EXTRACTORS.keys():
         if embeded_url.startswith(extractor):
-            return _EMBED_EXTRACTORS[extractor](reqObj.geturl(), page_content)
+            return _EMBED_EXTRACTORS[extractor](reqObj.url, page_content)
     print "[*E*] No extractor found for %s" % embeded_url
     return None
 
@@ -68,11 +78,8 @@ def __extract_swf_player(url, content):
     }
     token_url = "%s/api/player.api.php?%s" % (domain, urllib.urlencode(data))
 
-    req = urllib2.Request(token_url)
-    req.add_header('Referer', url)
-    req.add_header('X-Requested-With', 'ShockwaveFlash/19.0.0.226')
-    req.add_header('User-Agent', _USER_AGENT)
-    video_info = dict(urlparse.parse_qsl(urllib2.urlopen(req).read()))
+    video_info_res = http.send_request(token_url, set_request=__set_flash(url))
+    video_info = dict(urlparse.parse_qsl(video_info_res.text))
 
     if video_info.has_key("error_msg"):
         print "[*] Error Message: %s" % (video_info["error_msg"])
@@ -109,19 +116,17 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             print compiled_regex.findall(content)
             raise
 
-        regex_url = compiled_regex.findall(content)[match]
-        regex_url = __relative_url(url, regex_url)
-        if double_ref:
-            req = urllib2.Request(regex_url)
-            req.get_method = lambda : 'HEAD'
-            req.add_header('User-Agent', _USER_AGENT)
-            req.add_header('Referer', url)
-            video_url = urllib2.urlopen(req).geturl()
-        else:
-            video_url = regex_url
-        video_url = __relative_url(regex_url, video_url)
-
-        return video_url
+        try:
+            regex_url = compiled_regex.findall(content)[match]
+            regex_url = __relative_url(url, regex_url)
+            if double_ref:
+                video_url = utils.head_request(regex_url, __set_referer(url)).url
+            else:
+                video_url = __relative_url(regex_url, regex_url)
+            return video_url
+        except Exception, e:
+            print "[*E*] Failed to load link: %s: %s" % (url, e)
+            return None
     return f
 
 __register_extractor("http://auengine.com/",
