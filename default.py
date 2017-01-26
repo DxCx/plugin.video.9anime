@@ -27,8 +27,8 @@ def SEARCH(payload):
     return False
 
 @route('search/*')
-def SEARCH(payload):
-    query, page = payload.lsplit("/", 1)
+def SEARCH_PAGES(payload):
+    query, page = payload.rsplit("/", 1)
     return control.draw_items(NineAnimeBrowser().search_site(query,
                                                             int(page)))
 
