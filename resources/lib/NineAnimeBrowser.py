@@ -8,15 +8,19 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "https://9anime.to"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<a\shref=\"https://9anime.to/watch/(.+?)\"\sclass=\"poster\".*?>\s<img\ssrc=\".+?url=(.+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
-    _SEARCH_PAGES_RE = \
+    _PAGES_RE = \
     re.compile("<div\sclass=\"paging\">\s(.+?)\s</div>", re.DOTALL)
-    _SEARCH_PAGES_TOTAL_RE = \
+    _PAGES_TOTAL_RE = \
     re.compile("<span\sclass=\"total\">(\d+)<\/span>", re.DOTALL)
-    _LATEST_LINK_RE = re.compile("<li><div><span\sclass=\"rightside\">.+?<a\shref=\"/([-\w\s\d]+?)/(\d+?)/\w+\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong>.+?</a>.+?<img\ssrc=\"(.+?)\">.+?</li>", re.DOTALL)
+    _GENRES_BOX_RE = \
+    re.compile("<a>Genre</a>.+?<ul\sclass=\"sub\">(.+?)</ul>", re.DOTALL)
+    _GENRE_LIST_RE = \
+    re.compile("<li><a\shref=\".+?\/genre\/(.+?)\"\stitle=\"(.+?)\">.+?</li>",
+               re.DOTALL)
+
     _EPISODE_LINK_RE = re.compile("<li><div><a\shref=\"/([-\w\s\d]+?)/(\d+?)\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong></a><i\sclass=\"anititle\">(.+?)</i>", re.DOTALL)
     _ANIME_LIST_RESULTS_RE = re.compile("<li><a\shref=\"/([-\w\s\d]+?)\"\sclass=\"anm_det_pop\">(.+?)</a>", re.DOTALL)
     _NEWMANGA_CONT_RE = re.compile("<ul\sclass=\"newmanga\">(.+?)</ul>", re.DOTALL)
-    _INFO_IMG_RE = re.compile("<img class=\"cvr\" src=\"(.+?)\"", re.DOTALL)
 
     _PLAYER_SOURCES_UL_RE = re.compile("<ul\sclass=\"nav\snav-tabs\">(.+?)</ul>", re.DOTALL)
 
@@ -27,12 +31,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return utils.allocate_item(name, "animes/" + url + "/", True, image)
 
     def _handle_paging(self, results, base_url, page):
-        pages_html = self._SEARCH_PAGES_RE.findall(results)
+        pages_html = self._PAGES_RE.findall(results)
         # No Pages? empty list ;)
         if not len(pages_html):
             return []
 
-        total_pages = int(self._SEARCH_PAGES_TOTAL_RE.findall(pages_html[0])[0])
+        total_pages = int(self._PAGES_TOTAL_RE.findall(pages_html[0])[0])
         if page >= total_pages:
             return [] # Last page
 
@@ -71,6 +75,17 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("newest")
         return self._process_anime_view(url, data, "newest/%d", page)
 
+    def get_genres(self):
+        res = self._get_request(self._to_url())
+        genres_box = self._GENRES_BOX_RE.findall(res)[0]
+        generes = self._GENRE_LIST_RE.findall(genres_box)
+        generes = [(i[1], "genre/%s/1" % i[0]) for i in generes]
+        return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes)
+
+    def get_genre(self, name, page=1):
+        url = self._to_url("genre/%s" % name)
+        return self._process_anime_view(url, None, "genre/%s/%%d" % name, page)
+
     def get_anime_episodes(self, anime_url):
         resp = self._get_request(self._to_url("/series/%s" % anime_url))
         resp = self._NEWMANGA_CONT_RE.findall(resp)[0]
@@ -100,13 +115,3 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             url = self._to_url(url)
             links.append((name, url))
         return links
-
-    def get_anime_list(self, letter):
-        filter_regx = re.compile("<div\sid=\"nm%(ll)s\"\sname=\"nm%(ll)s\"\sclass=\"panel-body\">%(ul)s</div><div\sclass=\"panel-footer\"><ul\sclass=\"series_alpha\">(.+?)</ul>" % {"ul": letter.upper(), "ll": letter.lower()}, re.DOTALL)
-        resp = self._get_request(self._to_url("series"))
-        filtered = filter_regx.findall(resp)[0]
-
-        results = []
-        for res in self._ANIME_LIST_RESULTS_RE.findall(filtered):
-            results.append(utils.allocate_item(res[1], "animes/%s/" % res[0], True, ''))
-        return results

@@ -8,7 +8,7 @@ AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
     (control.lang(30000), "latest"),
     (control.lang(30001), "newest"),
-    (control.lang(30002), "all"),
+    (control.lang(30002), "genres"),
     (control.lang(30003), "search")
 ]
 
@@ -45,14 +45,14 @@ def SEARCH_PAGES(payload):
     return control.draw_items(NineAnimeBrowser().search_site(query,
                                                             int(page)))
 
-@route('all')
-def LIST_ALL_AB(payload):
-    return control.draw_items([utils.allocate_item(i, "all/%s" % i, True) for i in AB_LIST])
+@route('genres')
+def LIST_GENRES(payload):
+    return control.draw_items(NineAnimeBrowser().get_genres())
 
-@route('all/*')
-def SHOW_AB_LISTING(payload):
-    assert payload in AB_LIST, "Bad Param"
-    return control.draw_items(NineAnimeBrowser().get_anime_list(payload))
+@route('genre/*')
+def GENRE_ANIMES(payload):
+    genre, page = payload.rsplit("/", 1)
+    return control.draw_items(NineAnimeBrowser().get_genre(genre, page))
 
 @route('play/*')
 def PLAY(url):
