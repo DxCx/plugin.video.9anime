@@ -120,5 +120,4 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
                    servers.iteritems())
         sources = filter(lambda x: len(x[1]) != 0, sources)
         sources = map(lambda x: (x[0], x[1][0]['source']), sources)
-        sources = [("[%02d] %s" % (k, v[0]), v[1]) for k, v in enumerate(sources)]
         return sources
