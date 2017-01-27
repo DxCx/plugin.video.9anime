@@ -20,9 +20,16 @@ def fetch_sources(sources, dialog, raise_exceptions=False):
         name, url = do
         try:
             dialog.update(int(i * factor), name)
-            fetched_url = embed_extractor.load_video_from_url(url)
-            if fetched_url is not None:
-                fetched_sources.append(("%03d | %s" % (len(fetched_sources) + 1, name), fetched_url))
+            fetched_urls = embed_extractor.load_video_from_url(url)
+            if type(fetched_urls) is not list:
+                fetched_urls = [('', fetched_urls)]
+
+            if fetched_urls is not None:
+                for label, fetched_url in fetched_urls:
+                    label = " (%s)" % label if len(label) else ''
+                    fetched_sources.append(("%03d | %s%s" %
+                                           (len(fetched_sources) + 1, name, label),
+                                            fetched_url))
             else:
                 print "Skipping invalid source %s" % name
             dialog.update(int(i * factor))

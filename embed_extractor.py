@@ -3,6 +3,7 @@ import urllib
 import urlparse
 import utils
 import http
+import json
 
 _EMBED_EXTRACTORS = {}
 
@@ -34,6 +35,36 @@ def __set_flash(url):
         req.add_header('X-Requested-With', 'ShockwaveFlash/19.0.0.226')
         return __set_referer(url)(req)
     return f
+
+def __check_video_list(refer_url, vidlist):
+    referer = __set_referer(refer_url)
+    nlist = []
+    for item in vidlist:
+        try:
+            nlist.append((item[0], http.head_request(item[1],
+                                                     set_request=referer).url))
+        except Exception, e:
+            # Just don't add source.
+            pass
+
+    return nlist
+
+def __9anime_extract_direct(refer_url, grabInfo):
+    url = "%s?%s" % (grabInfo['grabber'], urllib.urlencode(grabInfo['params']))
+    url = __relative_url(refer_url, url)
+    resp = json.loads(http.send_request(url).text)
+    return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
+
+def __extract_9anime(url, page_content):
+    episode_id = url.rsplit('/', 1)[1]
+    url = "https://9anime.to/ajax/episode/info?id=%s&update=0" % episode_id
+    grabInfo = json.loads(http.send_request(url).text)
+    if grabInfo['type'] == 'iframe':
+        return load_video_from_url(grabInfo['target'])
+    elif grabInfo['type'] == 'direct':
+        return __9anime_extract_direct(url, grabInfo)
+
+    raise Exception('Unknown case, please report')
 
 def __animeram_factory(in_url, page_content):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
@@ -126,6 +157,8 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             print "[*E*] Failed to load link: %s: %s" % (url, e)
             return None
     return f
+
+__register_extractor("https://9anime.to/watch/", __extract_9anime)
 
 __register_extractor("http://ww1.animeram.cc", __animeram_factory)
 
