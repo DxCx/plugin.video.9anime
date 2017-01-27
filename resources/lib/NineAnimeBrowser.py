@@ -17,18 +17,20 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _GENRE_LIST_RE = \
     re.compile("<li><a\shref=\".+?\/genre\/(.+?)\"\stitle=\"(.+?)\">.+?</li>",
                re.DOTALL)
+    _EPISODES_RE = \
+    re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
+               re.DOTALL)
+    _EPISODE_BOXES_RE = \
+    re.compile("<i\sclass=\"fa\sfa-server\"></i>\s(.+?)\s</label>\s<div.+?>(.+?)</div>",
+               re.DOTALL)
 
     _EPISODE_LINK_RE = re.compile("<li><div><a\shref=\"/([-\w\s\d]+?)/(\d+?)\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong></a><i\sclass=\"anititle\">(.+?)</i>", re.DOTALL)
-    _ANIME_LIST_RESULTS_RE = re.compile("<li><a\shref=\"/([-\w\s\d]+?)\"\sclass=\"anm_det_pop\">(.+?)</a>", re.DOTALL)
-    _NEWMANGA_CONT_RE = re.compile("<ul\sclass=\"newmanga\">(.+?)</ul>", re.DOTALL)
 
-    _PLAYER_SOURCES_UL_RE = re.compile("<ul\sclass=\"nav\snav-tabs\">(.+?)</ul>", re.DOTALL)
-
-    def _parse_search_result(self, res):
+    def _parse_anime_view(self, res):
         name = res[2]
         image = res[1]
         url = res[0]
-        return utils.allocate_item(name, "animes/" + url + "/", True, image)
+        return utils.allocate_item(name, "animes/" + url, True, image)
 
     def _handle_paging(self, results, base_url, page):
         pages_html = self._PAGES_RE.findall(results)
@@ -46,12 +48,30 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
     def _process_anime_view(self, url, data, base_plugin_url, page):
         results = self._get_request(url, data)
-        all_results = []
-        for result in self._ANIME_VIEW_ITEMS_RE.findall(results):
-            all_results.append(self._parse_search_result(result))
-
+        all_results = map(self._parse_anime_view,
+                          self._ANIME_VIEW_ITEMS_RE.findall(results))
         all_results += self._handle_paging(results, base_plugin_url, page)
         return all_results
+
+    def _format_episode(self, anime_url):
+        def f(einfo):
+            return {
+                "id": int(einfo[1]),
+                "url": "play/" + anime_url + "/" + einfo[1],
+                "source": self._to_url("watch/%s/%s" % (anime_url, einfo[0])),
+                "name": "Episode %s (%s)" % (einfo[1], einfo[2])
+            }
+        return f
+
+    def _get_anime_info(self, anime_url):
+        resp = self._get_request(self._to_url("/watch/%s" % anime_url))
+        # Strip the server into boxes
+        episodes_boxes = self._EPISODE_BOXES_RE.findall(resp)
+
+        servers = [(i[0], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
+        servers = dict([(i[0], map(self._format_episode(anime_url),
+                                   i[1][::-1])) for i in servers])
+        return servers
 
     def search_site(self, search_string, page=1):
         data = {
@@ -87,31 +107,18 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return self._process_anime_view(url, None, "genre/%s/%%d" % name, page)
 
     def get_anime_episodes(self, anime_url):
-        resp = self._get_request(self._to_url("/series/%s" % anime_url))
-        resp = self._NEWMANGA_CONT_RE.findall(resp)[0]
+        servers = self._get_anime_info(anime_url)
+        server = servers[servers.keys()[0]]
+        return map(lambda x: utils.allocate_item(x['name'], x['url'], False, ''), server)
 
-        results = []
-        for res in self._EPISODE_LINK_RE.findall(resp):
-            ep_name = res[3].strip()
-            if len(ep_name):
-                name = "%s : %s" % (res[2] , ep_name)
-            else:
-                name = res[2]
-            results.append(utils.allocate_item(name, "play/" + res[0] + "/" + res[1], False, ''))
-        return results
-
-    def get_episode_sources(self, episode_url):
-        animeram_url = self._to_url(episode_url)
-        resp = self._get_request(animeram_url)
-        sources =  self._PLAYER_SOURCES_UL_RE.findall(resp)[0]
-        link_regex = re.compile("<a href=\"(.+?)\">(.+?)<span>(.+?)</span></a>", re.DOTALL)
-        tags_regex = re.compile("<span\sclass=\".+?\">(.+?)</span>")
-
-        links = []
-        for res in link_regex.findall(sources):
-            tags = " ".join(["[%s]" % i for i in tags_regex.findall(res[1])])
-            name = "%s %s" % (tags, res[-1])
-            url = "%s/1" % episode_url if res[0] == "#"  else res[0]
-            url = self._to_url(url)
-            links.append((name, url))
-        return links
+    def get_episode_sources(self, anime_url, episode):
+        servers = self._get_anime_info(anime_url)
+        # server list to server -> source
+        sources = map(lambda x: (x[0],
+                              filter(lambda y: y['id'] == episode,
+                                     x[1])),
+                   servers.iteritems())
+        sources = filter(lambda x: len(x[1]) != 0, sources)
+        sources = map(lambda x: (x[0], x[1][0]['source']), sources)
+        sources = [("[%02d] %s" % (k, v[0]), v[1]) for k, v in enumerate(sources)]
+        return sources

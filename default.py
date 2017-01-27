@@ -55,8 +55,10 @@ def GENRE_ANIMES(payload):
     return control.draw_items(NineAnimeBrowser().get_genre(genre, page))
 
 @route('play/*')
-def PLAY(url):
-    s = SourcesList(NineAnimeBrowser().get_episode_sources(url), {
+def PLAY(payload):
+    anime_url, episode = payload.rsplit("/", 1)
+    s = SourcesList(NineAnimeBrowser().get_episode_sources(anime_url,
+                                                           int(episode)), {
                         'title': control.lang(30100),
                         'processing': control.lang(30101),
                         'choose': control.lang(30102),
