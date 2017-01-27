@@ -24,14 +24,15 @@ def fetch_sources(sources, dialog, raise_exceptions=False):
             if type(fetched_urls) is not list:
                 fetched_urls = [('', fetched_urls)]
 
-            if fetched_urls is not None:
-                for label, fetched_url in fetched_urls:
-                    label = " (%s)" % label if len(label) else ''
-                    fetched_sources.append(("%03d | %s%s" %
-                                           (len(fetched_sources) + 1, name, label),
-                                            fetched_url))
-            else:
-                print "Skipping invalid source %s" % name
+            for label, fetched_url in fetched_urls:
+                if fetched_url is None:
+                    print "Skipping invalid source %s" % name
+                    continue
+
+                label = " (%s)" % label if len(label) else ''
+                fetched_sources.append(("%03d | %s%s" %
+                                       (len(fetched_sources) + 1, name, label),
+                                        fetched_url))
             dialog.update(int(i * factor))
         except Exception, e:
             print "[*E*] Skiping %s because Exception at parsing" % name
