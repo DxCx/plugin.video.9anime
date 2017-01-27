@@ -114,6 +114,19 @@ def __extract_swf_player(url, content):
         return None
     return video_info['url']
 
+def __extract_openload(url, content):
+    ol_id = re.findall('<span[^>]+id="[^"]+"[^>]*>([0-9]+)</span>', content)[0]
+    first_three_chars = int(float(ol_id[0:][:3]))
+    fifth_char = int(float(ol_id[3:5]))
+    urlcode = ''
+    num = 5
+    while num < len(ol_id):
+        urlcode += chr(int(float(ol_id[num:][:3])) +
+                     first_three_chars - fifth_char * int(float(ol_id[num + 3:][:2])))
+        num += 5
+    video_url = 'https://openload.co/stream/' + urlcode
+    return http.head_request(video_url).url
+
 def __register_extractor(urls, function):
     if type(urls) is not list:
         urls = [urls]
@@ -180,6 +193,8 @@ __register_extractor(["http://yourupload.com/", "http://www.yourupload.com/", "h
 __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
+
+__register_extractor("https://openload.co/embed/", __extract_openload)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)

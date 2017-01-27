@@ -21,10 +21,17 @@ class TestUtils(unittest.TestCase):
         self.assertGreaterEqual(len(fetched), len(sources) / 2)
         return fetched
 
-    def test_fetch_nineanime(self):
-        "fetch_sources fetches 9anime"
+    def test_fetch_nineanime_openload(self):
+        "fetch_sources fetches 9anime (OpenLoad)"
         self._test_sources([
-            #(u'OpenLoad', u'https://9anime.to/watch/one-piece.ov8/7jqp66'),
+            (u'OpenLoad', u'https://9anime.to/watch/one-piece.ov8/7jqp66'),
+            (u'OpenLoad', u'https://9anime.to/watch/one-piece.ov8/xry4kz'),
+            (u'OpenLoad', u'https://9anime.to/watch/one-piece.ov8/1nkj0x'),
+        ])
+
+    def test_fetch_nineanime_direct(self):
+        "fetch_sources fetches 9anime (Direct)"
+        self._test_sources([
             (u'Server F1', u'https://9anime.to/watch/one-piece.ov8/6lpo5p'),
             (u'Server F2', u'https://9anime.to/watch/one-piece.ov8/52on4q')
         ])
