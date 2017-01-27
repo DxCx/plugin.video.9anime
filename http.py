@@ -1,22 +1,4 @@
-import urllib2
-from urllib2 import URLError
-import httplib
-import socket
-import time
-from urlparse import urlparse
-from copy import deepcopy
-import re
-import js2py
-
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.poolmanager import PoolManager
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from requests.packages.urllib3.exceptions import InsecurePlatformWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
-
-import ssl
+from http_imports import *
 
 _USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
 _SESSION = None
@@ -51,9 +33,9 @@ def Session():
 
     return _SESSION
 
-def send_request(url, **kargs):
+def send_request(url, data=None, set_request=None, head=False):
     session = Session()
-    resp = __send_request(session, url, **kargs)
+    resp = __send_request(session, url, data, set_request, head)
 
     # Check if Cloudflare anti-bot is on
     if ( resp.status_code == 503
@@ -61,7 +43,7 @@ def send_request(url, **kargs):
          and b"jschl_vc" in resp.content
          and b"jschl_answer" in resp.content
     ):
-        return __solve_cf_challenge(session, resp, **kargs)
+        return __solve_cf_challenge(session, resp, data, set_request, head)
 
     # Otherwise, no Cloudflare anti-bot detected
     return resp
