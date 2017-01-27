@@ -4,8 +4,9 @@
 	<string id="20000">חלץ תמונות: </string>
 
 	<string id="30000">נוספו לאחרונה</string>
-	<string id="30001">הצג הכל</string>
-	<string id="30002">חיפוש</string>
+	<string id="30001">החדשים ביותר</string>
+	<string id="30002">לפי סיגנון</string>
+	<string id="30003">חיפוש</string>
 
 	<string id="30100">מחפש מקורות</string>
 	<string id="30101">מעבד %s</string>
