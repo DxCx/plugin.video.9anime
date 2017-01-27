@@ -40,31 +40,29 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         name = "Next Page (%d/%d)" % (next_page, total_pages)
         return [utils.allocate_item(name, base_url % next_page, True, None)]
 
-    def search_site(self, search_string, page=1):
-        url = self._to_url("search?%s" % urllib.urlencode({
-            "keyword": search_string,
-            "page": page,
-        }))
-
-        results = self._get_request(url)
+    def _process_anime_view(self, url, data, base_plugin_url, page):
+        results = self._get_request(url, data)
         all_results = []
         for result in self._RELEVANT_RESULTS_RE.findall(results):
             all_results.append(self._parse_search_result(result))
 
-        all_results += self._handle_paging(results, "search/%s/%%d" % search_string, page)
+        all_results += self._handle_paging(results, base_plugin_url, page)
         return all_results
 
-    def get_latest(self):
-        resp = self._get_request(self._to_url())
-        resp = self._NEWMANGA_CONT_RE.findall(resp)
+    def search_site(self, search_string, page=1):
+        data = {
+            "keyword": search_string,
+            "page": page,
+        }
+        url = self._to_url("search")
+        return self._process_anime_view(url, data, "search/%s/%%d" % search_string, page)
 
-        results = []
-        for container in resp:
-            for res in self._LATEST_LINK_RE.findall(container):
-                image = "http:%s" % res[3]
-                name = res[2]
-                results.append(utils.allocate_item(name, "play/" + res[0] + "/" + res[1], False, image))
-        return results
+    def get_latest(self, page=1):
+        data = {
+            "page": page,
+        }
+        url = self._to_url("updated")
+        return self._process_anime_view(url, data, "latest/%d", page)
 
     def get_anime_episodes(self, anime_url):
         resp = self._get_request(self._to_url("/series/%s" % anime_url))

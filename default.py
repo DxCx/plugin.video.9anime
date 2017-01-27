@@ -19,6 +19,10 @@ def ANIMES_PAGE(animeurl):
 def LATEST(payload):
     return control.draw_items(NineAnimeBrowser().get_latest())
 
+@route('latest/*')
+def LATEST_PAGES(payload):
+    return control.draw_items(NineAnimeBrowser().get_latest(int(payload)))
+
 @route('search')
 def SEARCH(payload):
     query = control.keyboard(control.lang(30002))

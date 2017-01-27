@@ -31,10 +31,20 @@ class TestBrowser(unittest.TestCase):
             'url': 'search/Dragon/2'
         })
 
-    #def test_get_latest(self):
-    #    "get_latest resturns at least 10 items"
-    #    latest = self.browser.get_latest()
-    #    self.assertGreater(len(latest), 10)
+    def test_get_latest(self):
+        "get_latest returns at least 10 items"
+        latest = self.browser.get_latest()
+        self.assertGreater(len(latest), 10)
+
+    def test_get_latest_pages(self):
+        "get_latest returns next page"
+        latest = self.browser.get_latest()
+        self.assertEqual(latest[-1], {
+            'name': 'Next Page (2/190)',
+            'is_dir': True,
+            'image': None,
+            'url': 'latest/2'
+        })
 
     #def test_get_anime_episodes(self):
     #    "get_anime_episodes works for one-piece"
