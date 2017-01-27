@@ -17,8 +17,17 @@ class TestUtils(unittest.TestCase):
     def _test_sources(self, sources):
         fetched = utils.fetch_sources(sources, MockedDialog(), True)
         # Make sure we have at least 50% hit rate
+        self.assertIsNotNone(fetched)
         self.assertGreaterEqual(len(fetched), len(sources) / 2)
         return fetched
+
+    def test_fetch_nineanime(self):
+        "fetch_sources fetches 9anime"
+        self._test_sources([
+            #(u'OpenLoad', u'https://9anime.to/watch/one-piece.ov8/7jqp66'),
+            (u'Server F1', u'https://9anime.to/watch/one-piece.ov8/6lpo5p'),
+            (u'Server F2', u'https://9anime.to/watch/one-piece.ov8/52on4q')
+        ])
 
     def test_fetch_abvideo(self):
         "fetch_sources fetches ABVideo"
