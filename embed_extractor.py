@@ -6,6 +6,23 @@ import http
 
 _EMBED_EXTRACTORS = {}
 
+def load_video_from_url(in_url):
+    try:
+        print "Probing source: %s" % in_url
+        reqObj = http.send_request(in_url)
+        page_content = reqObj.text
+        url = reqObj.url
+    except http.URLError:
+        return None # Dead link, Skip result
+    except:
+        raise
+
+    for extractor in _EMBED_EXTRACTORS.keys():
+        if in_url.startswith(extractor):
+            return _EMBED_EXTRACTORS[extractor](url, page_content)
+    print "[*E*] No extractor found for %s" % url
+    return None
+
 def __set_referer(url):
     def f(req):
         req.add_header('Referer', url)
@@ -18,32 +35,11 @@ def __set_flash(url):
         return __set_referer(url)(req)
     return f
 
-def load_video_from_url(in_url):
+def __animeram_factory(in_url, page_content):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
-
-    page_content = http.send_request(in_url).text
     embeded_url = IFRAME_RE.findall(page_content)[0]
-    if embeded_url.startswith("//"):
-        embeded_url = "http:%s" % embeded_url
-    try:
-        print "Probing source: %s" % embeded_url
-        reqObj = http.send_request(embeded_url)
-        page_content = reqObj.text
-    except http.URLError:
-        return None # Dead link, Skip result
-    except:
-        raise
-    for extractor in _EMBED_EXTRACTORS.keys():
-        if embeded_url.startswith(extractor):
-            return _EMBED_EXTRACTORS[extractor](reqObj.url, page_content)
-    print "[*E*] No extractor found for %s" % embeded_url
-    return None
-
-def _encode_data(data):
-    encmap = ['.', '-']
-    for old in encmap:
-        data = data.replace(old, "%%%02X" % ord(old))
-    return data
+    embeded_url = __relative_url(in_url, embeded_url)
+    return load_video_from_url(embeded_url)
 
 def __extract_js_var(content, name):
     value_re = re.compile("%s=\"(.+?)\";" % name, re.DOTALL)
@@ -101,7 +97,9 @@ def __relative_url(original_url, new_url):
     if new_url.startswith("http://") or new_url.startswith("https://"):
         return new_url
 
-    if new_url.startswith("/"):
+    if new_url.startswith("//"):
+        return "http:%s" % new_url
+    elif new_url.startswith("/"):
         return urlparse.urljoin(original_url, new_url)
     else:
         raise Exception("Cannot resolve %s" % new_url)
@@ -129,10 +127,12 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             return None
     return f
 
+__register_extractor("http://ww1.animeram.cc", __animeram_factory)
+
 __register_extractor("http://auengine.com/",
                     __extractor_factory("var\svideo_link\s=\s'(.+?)';"))
 
-__register_extractor("http://mp4upload.com/",
+__register_extractor(["http://mp4upload.com/","https://mp4upload.com/"],
                     __extractor_factory("\"file\":\s\"(.+?)\","))
 
 __register_extractor("http://videonest.net/",
