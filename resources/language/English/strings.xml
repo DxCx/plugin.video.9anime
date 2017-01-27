@@ -4,8 +4,9 @@
 	<string id="20000">Extract Images: </string>
 
 	<string id="30000">Latest</string>
-	<string id="30001">List all</string>
-	<string id="30002">Search</string>
+	<string id="30001">Newest</string>
+	<string id="30002">List all</string>
+	<string id="30003">Search</string>
 
 	<string id="30100">Fetching Sources</string>
 	<string id="30101">Processing %s</string>

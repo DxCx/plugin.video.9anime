@@ -46,6 +46,21 @@ class TestBrowser(unittest.TestCase):
             'url': 'latest/2'
         })
 
+    def test_get_newest(self):
+        "get_newest returns at least 10 items"
+        newest = self.browser.get_newest()
+        self.assertGreater(len(newest), 10)
+
+    def test_get_newest_pages(self):
+        "get_newest returns next page"
+        newest = self.browser.get_newest()
+        self.assertEqual(newest[-1], {
+            'name': 'Next Page (2/190)',
+            'is_dir': True,
+            'image': None,
+            'url': 'newest/2'
+        })
+
     #def test_get_anime_episodes(self):
     #    "get_anime_episodes works for one-piece"
     #    episodes = self.browser.get_anime_episodes("one-piece")

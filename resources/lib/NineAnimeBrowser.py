@@ -6,7 +6,7 @@ from ui import http
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "https://9anime.to"
-    _RELEVANT_RESULTS_RE = \
+    _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<a\shref=\"https://9anime.to/watch/(.+?)\"\sclass=\"poster\".*?>\s<img\ssrc=\".+?url=(.+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
     _SEARCH_PAGES_RE = \
     re.compile("<div\sclass=\"paging\">\s(.+?)\s</div>", re.DOTALL)
@@ -43,7 +43,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     def _process_anime_view(self, url, data, base_plugin_url, page):
         results = self._get_request(url, data)
         all_results = []
-        for result in self._RELEVANT_RESULTS_RE.findall(results):
+        for result in self._ANIME_VIEW_ITEMS_RE.findall(results):
             all_results.append(self._parse_search_result(result))
 
         all_results += self._handle_paging(results, base_plugin_url, page)
@@ -63,6 +63,13 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         }
         url = self._to_url("updated")
         return self._process_anime_view(url, data, "latest/%d", page)
+
+    def get_newest(self, page=1):
+        data = {
+            "page": page,
+        }
+        url = self._to_url("newest")
+        return self._process_anime_view(url, data, "newest/%d", page)
 
     def get_anime_episodes(self, anime_url):
         resp = self._get_request(self._to_url("/series/%s" % anime_url))

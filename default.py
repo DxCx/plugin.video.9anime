@@ -7,13 +7,22 @@ from resources.lib.NineAnimeBrowser import NineAnimeBrowser
 AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
     (control.lang(30000), "latest"),
-    (control.lang(30001), "all"),
-    (control.lang(30002), "search")
+    (control.lang(30001), "newest"),
+    (control.lang(30002), "all"),
+    (control.lang(30003), "search")
 ]
 
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
     return control.draw_items(NineAnimeBrowser().get_anime_episodes(animeurl))
+
+@route('newest')
+def NEWEST(payload):
+    return control.draw_items(NineAnimeBrowser().get_newest())
+
+@route('newest/*')
+def NEWEST_PAGES(payload):
+    return control.draw_items(NineAnimeBrowser().get_newest(int(payload)))
 
 @route('latest')
 def LATEST(payload):
