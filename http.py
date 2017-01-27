@@ -78,6 +78,7 @@ def __send_request(session, url, data=None, set_request=None, head=False):
         'headers': r.headers,
         'verify': False,
         'url': url,
+        'allow_redirects': True,
     }
 
     if head:
