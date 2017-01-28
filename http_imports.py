@@ -1,3 +1,5 @@
+import sys
+import os
 import urllib2
 from urllib2 import URLError
 import httplib
@@ -16,14 +18,5 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
 import ssl
-
-def import_js2py():
-    import sys
-    import os
-    path_bkup = sys.path[:]
-    sys.path.append(os.path.dirname(__file__))
-    import js2py
-    sys.path = path_bkup
-    return js2py
-
-js2py = import_js2py()
+sys.path.append(os.path.dirname(__file__))
+import js2py
