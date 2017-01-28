@@ -43,7 +43,11 @@ def send_request(url, data=None, set_request=None, head=False):
          and b"jschl_vc" in resp.content
          and b"jschl_answer" in resp.content
     ):
-        return __solve_cf_challenge(session, resp, data, set_request, head)
+        return __solve_cf_challenge(session, resp, **{
+            "data": data,
+            "set_request": set_request,
+            "head": head,
+        })
 
     # Otherwise, no Cloudflare anti-bot detected
     return resp
@@ -92,7 +96,7 @@ def __solve_cf_challenge(sess, resp, **original_kwargs):
     domain = urlparse(resp.url).netloc
     submit_url = "%s://%s/cdn-cgi/l/chk_jschl" % (parsed_url.scheme, domain)
 
-    cloudflare_kwargs = deepcopy(original_kwargs)
+    cloudflare_kwargs = {}
     params = cloudflare_kwargs.setdefault("params", {})
     headers = cloudflare_kwargs.setdefault("headers", {})
     headers["Referer"] = resp.url
