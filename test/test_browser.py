@@ -28,9 +28,10 @@ class TestBrowser(unittest.TestCase):
     def test_search_with_pages(self):
         "search 'Dragon' and verify pages"
         search_res = self.browser.search_site("Dragon")
-        self.assertEqual(len(search_res), 33)
+        self.assertGreaterEqual(len(search_res), 33)
+        self.assertEqual(search_res[-1]['name'].startswith('Next Page (2'), True)
         self.assertEqual(search_res[-1], {
-            'name': 'Next Page (2/4)',
+            'name': search_res[-1]['name'],
             'is_dir': True,
             'image': None,
             'url': 'search/Dragon/2'
@@ -46,8 +47,9 @@ class TestBrowser(unittest.TestCase):
     def test_get_latest_pages(self):
         "get_latest returns next page"
         latest = self.browser.get_latest()
+        self.assertEqual(latest[-1]['name'].startswith('Next Page (2'), True)
         self.assertEqual(latest[-1], {
-            'name': 'Next Page (2/190)',
+            'name': latest[-1]['name'],
             'is_dir': True,
             'image': None,
             'url': 'latest/2'
@@ -63,8 +65,9 @@ class TestBrowser(unittest.TestCase):
     def test_get_newest_pages(self):
         "get_newest returns next page"
         newest = self.browser.get_newest()
+        self.assertEqual(newest[-1]['name'].startswith('Next Page (2'), True)
         self.assertEqual(newest[-1], {
-            'name': 'Next Page (2/190)',
+            'name': newest[-1]['name'],
             'is_dir': True,
             'image': None,
             'url': 'newest/2'
@@ -87,18 +90,12 @@ class TestBrowser(unittest.TestCase):
         "get_genres returns anime list by genre"
         anime_list = self.browser.get_genre("action")
         self.assertGreater(len(anime_list), 10)
-        self.assertEqual(anime_list[0], {
-            'url': 'animes/tales-of-zestiria-the-x-2nd-season-dub.m8nv',
-            'is_dir': True,
-            'image': anime_list[0]['image'],
-            'name': 'Tales of Zestiria the X 2nd Season (Dub)'
-        })
         self._sleep()
 
     def test_get_anime_episodes(self):
         "get_anime_episodes works for one-piece"
         episodes = self.browser.get_anime_episodes("one-piece.ov8")
-        self.assertEqual(len(episodes) > 750, True)
+        self.assertGreaterEqual(len(episodes), 750)
         self.assertEqual(episodes[-1], {
             'url': 'play/one-piece.ov8/1',
             'is_dir': False, 'image': '',
@@ -109,7 +106,7 @@ class TestBrowser(unittest.TestCase):
     def test_get_episode_sources(self):
         "get_episode_sources find nartuo's first episode"
         sources = self.browser.get_episode_sources('one-piece.ov8', 1)
-        self.assertEqual(len(sources), 3)
+        self.assertGreaterEqual(len(sources), 3)
         self._sleep()
 
 if __name__ == "__main__":

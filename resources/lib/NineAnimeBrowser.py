@@ -7,7 +7,7 @@ from ui import http
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "https://9anime.to"
     _ANIME_VIEW_ITEMS_RE = \
-    re.compile("<div\sclass=\"item\">\s<a\shref=\"https://9anime.to/watch/(.+?)\"\sclass=\"poster\".*?>\s<img\ssrc=\".+?url=(.+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
+    re.compile("<div\sclass=\"item\">\s<a\shref=\"%s/watch/(.+?)\"\sclass=\"poster\".*?>\s<img\ssrc=\".+?url=(.+?)\"\salt=\"(.+?)\">.*?</div>" % (_BASE_URL, ), re.DOTALL)
     _PAGES_RE = \
     re.compile("<div\sclass=\"paging\">\s(.+?)\s</div>", re.DOTALL)
     _PAGES_TOTAL_RE = \
@@ -67,7 +67,6 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         resp = self._get_request(self._to_url("/watch/%s" % anime_url))
         # Strip the server into boxes
         episodes_boxes = self._EPISODE_BOXES_RE.findall(resp)
-
         servers = [(i[0], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
         servers = dict([(i[0], map(self._format_episode(anime_url),
                                    i[1][::-1])) for i in servers])
@@ -96,7 +95,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return self._process_anime_view(url, data, "newest/%d", page)
 
     def get_genres(self):
-        res = self._get_request(self._to_url())
+        res = self._get_request(self._to_url("/watch"))
         genres_box = self._GENRES_BOX_RE.findall(res)[0]
         generes = self._GENRE_LIST_RE.findall(genres_box)
         generes = [(i[1], "genre/%s/1" % i[0]) for i in generes]
@@ -108,7 +107,9 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
     def get_anime_episodes(self, anime_url):
         servers = self._get_anime_info(anime_url)
-        server = servers[servers.keys()[0]]
+        mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
+        server = servers[mostSources]
+
         return map(lambda x: utils.allocate_item(x['name'], x['url'], False, ''), server)
 
     def get_episode_sources(self, anime_url, episode):
