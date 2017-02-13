@@ -52,7 +52,16 @@ def __check_video_list(refer_url, vidlist):
 def __9anime_extract_direct(refer_url, grabInfo):
     url = "%s?%s" % (grabInfo['grabber'], urllib.urlencode(grabInfo['params']))
     url = __relative_url(refer_url, url)
-    resp = json.loads(http.send_request(url).text)
+    resp = json.loads(http.send_request(url,
+                                        set_request=__set_referer(refer_url)).text)
+    if 'data' not in resp.keys():
+        raise Exception('Failed to parse 9anime direct with error: %s' %
+                        resp['error'] if 'error' in resp.keys() else
+                        'No-Error-Set')
+
+    if 'error' in resp.keys() and resp['error']:
+        print '[*E*] Failed to parse 9anime direct but got data with error: %s' % resp['error']
+
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
 def __extract_9anime(url, page_content):
