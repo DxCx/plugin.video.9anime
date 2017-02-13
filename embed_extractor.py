@@ -52,12 +52,22 @@ def __check_video_list(refer_url, vidlist):
 def __9anime_extract_direct(refer_url, grabInfo):
     url = "%s?%s" % (grabInfo['grabber'], urllib.urlencode(grabInfo['params']))
     url = __relative_url(refer_url, url)
-    resp = json.loads(http.send_request(url).text)
+    resp = json.loads(http.send_request(url,
+                                        set_request=__set_referer(refer_url)).text)
+    if 'data' not in resp.keys():
+        raise Exception('Failed to parse 9anime direct with error: %s' %
+                        resp['error'] if 'error' in resp.keys() else
+                        'No-Error-Set')
+
+    if 'error' in resp.keys() and resp['error']:
+        print '[*E*] Failed to parse 9anime direct but got data with error: %s' % resp['error']
+
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
 def __extract_9anime(url, page_content):
     episode_id = url.rsplit('/', 1)[1]
-    url = "https://9anime.to/ajax/episode/info?id=%s&update=0" % episode_id
+    domain = urlparse.urlparse(url).netloc
+    url = "https://%s/ajax/episode/info?id=%s&update=0" % (domain, episode_id)
     grabInfo = json.loads(http.send_request(url).text)
     if grabInfo['type'] == 'iframe':
         return load_video_from_url(grabInfo['target'])
@@ -114,16 +124,23 @@ def __extract_swf_player(url, content):
         return None
     return video_info['url']
 
+# Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
     ol_id = re.findall('<span[^>]+id="[^"]+"[^>]*>([0-9]+)</span>', content)[0]
-    first_three_chars = int(float(ol_id[0:][:3]))
-    fifth_char = int(float(ol_id[3:5]))
-    urlcode = ''
-    num = 5
+    first_two_chars = int(float(ol_id[0:][:2]))
+    urlcodedict = {}
+    num = 2
+
     while num < len(ol_id):
-        urlcode += chr(int(float(ol_id[num:][:3])) +
-                     first_three_chars - fifth_char * int(float(ol_id[num + 3:][:2])))
+        key = int(float(ol_id[num + 3:][:2]))
+        urlcodedict[key] = chr(int(float(ol_id[num:][:3])) -
+                           first_two_chars)
         num += 5
+
+    urlcode = ''
+    for i in range(len(urlcode)):
+        urlcode += urlcodedict[i]
+
     video_url = 'https://openload.co/stream/' + urlcode
     return http.head_request(video_url).url
 
@@ -171,14 +188,17 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             return None
     return f
 
-__register_extractor("https://9anime.to/watch/", __extract_9anime)
+__register_extractor(["https://9anime.to/watch/", "https://9anime.tv/watch/"], __extract_9anime)
 
 __register_extractor("http://ww1.animeram.cc", __animeram_factory)
 
 __register_extractor("http://auengine.com/",
                     __extractor_factory("var\svideo_link\s=\s'(.+?)';"))
 
-__register_extractor(["http://mp4upload.com/","https://mp4upload.com/"],
+__register_extractor(["http://mp4upload.com/",
+                      "http://www.mp4upload.com/",
+                      "https://www.mp4upload.com/",
+                      "https://mp4upload.com/"],
                     __extractor_factory("\"file\":\s\"(.+?)\","))
 
 __register_extractor("http://videonest.net/",
