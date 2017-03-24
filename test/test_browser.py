@@ -28,7 +28,7 @@ class TestBrowser(unittest.TestCase):
     def test_search_with_pages(self):
         "search 'Dragon' and verify pages"
         search_res = self.browser.search_site("Dragon")
-        self.assertGreaterEqual(len(search_res), 33)
+        self.assertGreaterEqual(len(search_res), 30)
         self.assertEqual(search_res[-1]['name'].startswith('Next Page (2'), True)
         self.assertEqual(search_res[-1], {
             'name': search_res[-1]['name'],
@@ -97,9 +97,9 @@ class TestBrowser(unittest.TestCase):
         episodes = self.browser.get_anime_episodes("one-piece.ov8")
         self.assertGreaterEqual(len(episodes), 750)
         self.assertEqual(episodes[-1], {
-            'url': 'play/one-piece.ov8/1',
+            'url': u'play/one-piece.ov8/1',
             'is_dir': False, 'image': '',
-            'name': "Episode 1 (Dec 25, 2016 - 13:02)"
+            'name': u"Episode 1 (Dec 25, 2016 - 10:39)"
         })
         self._sleep()
 
