@@ -69,6 +69,9 @@ def __extract_9anime(url, page_content):
     domain = urlparse.urlparse(url).netloc
     url = "https://%s/ajax/episode/info?id=%s&update=0" % (domain, episode_id)
     grabInfo = json.loads(http.send_request(url).text)
+    if 'error' in grabInfo.keys():
+        raise Exception('error while trying to fetch info: %s' %
+                        grabInfo['error'])
     if grabInfo['type'] == 'iframe':
         return load_video_from_url(grabInfo['target'])
     elif grabInfo['type'] == 'direct':
@@ -188,7 +191,15 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             return None
     return f
 
-__register_extractor(["https://9anime.to/watch/", "https://9anime.tv/watch/"], __extract_9anime)
+__register_extractor([
+    "https://9anime.to/watch/",
+    "https://9anime.tv/watch/",
+    "https://9anime.is/watch/",
+
+    "http://9anime.to/watch/",
+    "http://9anime.tv/watch/",
+    "http://9anime.is/watch/",
+], __extract_9anime)
 
 __register_extractor("http://ww1.animeram.cc", __animeram_factory)
 
