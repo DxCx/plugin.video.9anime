@@ -1,3 +1,7 @@
+[B]0.0.2[/B]
+- fix for domain issues
+- update OpenLoad algorithem
+
 [B]0.0.1[/B]
 - Add support for the new Mp4Upload source.
 - Minor bug fixes
