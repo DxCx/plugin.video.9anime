@@ -30,14 +30,12 @@ class TestUtils(unittest.TestCase):
     #         (u'Mp4Upload', u'http://9anime.is/watch/one-piece.ov8/mqjm2v'),
     #     ])
 
-    # TODO: There is issue with OpenLoad, need to fix it =\
-    # --------------------------------
-    # def test_fetch_nineanime_openload(self):
-    #     "fetch_sources fetches 9anime (OpenLoad)"
-    #     self._test_sources([
-    #         (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/7jqp66'),
-    #         (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/xry4kz'),
-    #     ])
+    def test_fetch_nineanime_openload(self):
+        "fetch_sources fetches 9anime (OpenLoad)"
+        self._test_sources([
+            (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/7jqp66'),
+            (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/xry4kz'),
+        ])
 
     def test_fetch_nineanime_direct(self):
         "fetch_sources fetches 9anime (Direct)"
