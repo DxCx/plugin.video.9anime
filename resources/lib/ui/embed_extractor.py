@@ -129,22 +129,50 @@ def __extract_swf_player(url, content):
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
-    ol_id = re.findall('<span[^>]+id="[^"]+"[^>]*>([0-9]+)</span>', content)[0]
-    first_two_chars = int(float(ol_id[0:][:2]))
-    urlcodedict = {}
-    num = 2
+    splice = lambda s, start, end: s[:start] + s[start + end:]
 
-    while num < len(ol_id):
-        key = int(float(ol_id[num + 3:][:2]))
-        urlcodedict[key] = chr(int(float(ol_id[num:][:3])) -
-                           first_two_chars)
-        num += 5
+    ol_id = re.findall('<span[^>]+id=\"[^\"]+\"[^>]*>([0-9a-z]+)</span>', content)[0]
+    arrow = ord(ol_id[0])
+    pos = arrow - 52
+    nextOpen = max(2, pos)
+    pos = min(nextOpen, len(ol_id) - 30 - 2)
+    part = ol_id[pos: pos + 30]
+    arr = [0] * 10
+    i = 0
+    while i < len(part):
+      arr[i / 3] = int(part[i: i + 3], 8)
+      i += 3
 
-    urlcode = ''
-    for i in range(len(urlcode)):
-        urlcode += urlcodedict[i]
+    chars = [i for i in ol_id]
+    chars = splice(chars, pos, 30)
 
-    video_url = 'https://openload.co/stream/' + urlcode
+    a = ''.join(chars)
+    tagNameArr = []
+    i = 0
+    n = 0
+    while i < len(a):
+      text = a[i: i + 2]
+      cDigit = a[i: i + 3]
+      ch = a[i: i + 4]
+      code = int(text, 16)
+      i += 2
+      if n % 3 is 0:
+        code = int(cDigit, 8)
+        i += 1
+      else:
+        if n % 2 is 0:
+          if 0 is not n:
+            if ord(a[n - 1][0]) < 60:
+              code = int(ch, 10)
+              i += 2
+
+      val = arr[n % 9]
+      code ^= 213
+      code ^= val
+      tagNameArr.append(chr(code))
+      n += 1
+
+    video_url = "https://openload.co/stream/" + ''.join(tagNameArr) + "?mime=true"
     return http.head_request(video_url).url
 
 def __register_extractor(urls, function):
@@ -225,8 +253,7 @@ __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
-# TODO: bugged
-#__register_extractor("https://openload.co/embed/", __extract_openload)
+__register_extractor("https://openload.co/embed/", __extract_openload)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
