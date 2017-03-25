@@ -67,7 +67,7 @@ def __9anime_extract_direct(refer_url, grabInfo):
 def __extract_9anime(url, page_content):
     episode_id = url.rsplit('/', 1)[1]
     domain = urlparse.urlparse(url).netloc
-    url = "https://%s/ajax/episode/info?id=%s&update=0" % (domain, episode_id)
+    url = "http://%s/ajax/episode/info?id=%s&update=0" % (domain, episode_id)
     grabInfo = json.loads(http.send_request(url).text)
     if 'error' in grabInfo.keys():
         raise Exception('error while trying to fetch info: %s' %
@@ -225,7 +225,8 @@ __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
-__register_extractor("https://openload.co/embed/", __extract_openload)
+# TODO: bugged
+#__register_extractor("https://openload.co/embed/", __extract_openload)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
