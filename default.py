@@ -52,7 +52,7 @@ def LIST_GENRES(payload):
 @route('genre/*')
 def GENRE_ANIMES(payload):
     genre, page = payload.rsplit("/", 1)
-    return control.draw_items(NineAnimeBrowser().get_genre(genre, page))
+    return control.draw_items(NineAnimeBrowser().get_genre(genre, int(page)))
 
 @route('play/*')
 def PLAY(payload):

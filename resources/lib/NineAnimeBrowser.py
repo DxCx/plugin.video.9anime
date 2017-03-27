@@ -102,7 +102,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes)
 
     def get_genre(self, name, page=1):
-        url = self._to_url("genre/%s" % name)
+        url = self._to_url("genre/%s?page=%d" % (name, page))
         return self._process_anime_view(url, None, "genre/%s/%%d" % name, page)
 
     def get_anime_episodes(self, anime_url):
