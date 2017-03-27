@@ -87,9 +87,21 @@ class TestBrowser(unittest.TestCase):
         self._sleep()
 
     def test_get_genre(self):
-        "get_genres returns anime list by genre"
+        "get_genre returns anime list by genre"
         anime_list = self.browser.get_genre("action")
         self.assertGreater(len(anime_list), 10)
+        self._sleep()
+
+    def test_get_genre_pages(self):
+        "get_genre returns anime list with pages"
+        anime_list = self.browser.get_genre("action", 1)
+        self.assertEqual(anime_list[-1]['name'].startswith('Next Page (2'), True)
+        self.assertEqual(anime_list[-1], {
+            'name': anime_list[-1]['name'],
+            'is_dir': True,
+            'image': None,
+            'url': 'genre/action/2'
+        })
         self._sleep()
 
     def test_get_anime_episodes(self):
