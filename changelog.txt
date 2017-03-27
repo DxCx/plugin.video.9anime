@@ -1,3 +1,6 @@
+[B]Next[/B]
+- fix for anime list inside a genre (#10)
+
 [B]0.0.2[/B]
 - fix for domain issues
 - update OpenLoad algorithem
