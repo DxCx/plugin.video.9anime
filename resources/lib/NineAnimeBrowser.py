@@ -7,7 +7,7 @@ from ui import http
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "http://9anime.is"
     _ANIME_VIEW_ITEMS_RE = \
-    re.compile("<div\sclass=\"item\">\s<a\shref=\"%s/watch/(.+?)\"\sclass=\"poster\".*?>\s<img\ssrc=\".+?url=(.+?)\"\salt=\"(.+?)\">.*?</div>" % (_BASE_URL, ), re.DOTALL)
+    re.compile("<div\sclass=\"item\">\s<a\shref=\".+?/watch/(.+?)\"\sclass=\"poster\"[^>]*?>\s<img\ssrc=\".+?url=([^\"]+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
     _PAGES_RE = \
     re.compile("<div\sclass=\"paging\">\s(.+?)\s</div>", re.DOTALL)
     _PAGES_TOTAL_RE = \
