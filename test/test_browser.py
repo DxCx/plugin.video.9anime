@@ -18,10 +18,10 @@ class TestBrowser(unittest.TestCase):
         search_res = self.browser.search_site("Naruto Shippuden")
         self.assertGreaterEqual(len(search_res), 1)
         self.assertEqual(search_res[0], {
-            'url': 'animes/naruto-shippuuden-dub.00zr',
+            'url': 'animes/naruto-shippuuden.qv3',
             'is_dir': True,
             'image': search_res[0]['image'],
-            'name': 'Naruto: Shippuuden (Dub)'
+            'name': 'Naruto: Shippuuden'
         })
         self._sleep()
 
@@ -79,10 +79,10 @@ class TestBrowser(unittest.TestCase):
         genre_list = self.browser.get_genres()
         self.assertGreater(len(genre_list), 10)
         self.assertEqual(genre_list[0], {
-            'url': 'genre/action/1',
+            'url': 'genre/adventure/1',
             'is_dir': True,
             'image': '',
-            'name': 'Action'
+            'name': 'Adventure'
         })
         self._sleep()
 
