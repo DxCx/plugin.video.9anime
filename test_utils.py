@@ -30,18 +30,19 @@ class TestUtils(unittest.TestCase):
     #         (u'Mp4Upload', u'http://9anime.is/watch/one-piece.ov8/mqjm2v'),
     #     ])
 
-    def test_fetch_nineanime_openload(self):
-        "fetch_sources fetches 9anime (OpenLoad)"
-        self._test_sources([
-            (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/7jqp66'),
-            (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/xry4kz'),
-        ])
+    # TODO: Openload is not supported at the moment
+    # def test_fetch_nineanime_openload(self):
+    #     "fetch_sources fetches 9anime (OpenLoad)"
+    #     self._test_sources([
+    #         (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/7jqp66'),
+    #         (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/xry4kz'),
+    #     ])
 
     def test_fetch_nineanime_direct(self):
         "fetch_sources fetches 9anime (Direct)"
         self._test_sources([
-            (u'Server F1', u'http://9anime.is/watch/one-piece.ov8/wor046'),
-            (u'Server F2', u'http://9anime.is/watch/one-piece.ov8/52on4q')
+            (u'Server F1', u'http://9anime.is/watch/one-piece.ov8/90v58x'),
+            (u'Server F2', u'http://9anime.is/watch/one-piece.ov8/6wp727')
         ])
 
     def test_fetch_abvideo(self):
