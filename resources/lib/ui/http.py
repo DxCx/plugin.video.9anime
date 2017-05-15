@@ -1,6 +1,7 @@
+import urllib
 from http_imports import *
 
-_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
+_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
 _SESSION = None
 
 class SSLAdapter(HTTPAdapter):
@@ -11,15 +12,23 @@ class SSLAdapter(HTTPAdapter):
                               block=block)
 
 class PrepReq(object):
-    def __init__(self):
+    def __init__(self, session):
         self._dict = {}
+        self._cookies = session.cookies
 
     def add_header(self, key, value):
         self._dict[key] = value
 
+    def add_cookie(self, key, value):
+        self._cookies.update({ key: value })
+
     @property
     def headers(self):
         return self._dict
+
+    @property
+    def cookies(self):
+        return self._cookies.keys()
 
 def Session():
     global _SESSION
@@ -56,7 +65,7 @@ def head_request(url, set_request=None):
     return send_request(url, set_request=set_request, head=True)
 
 def __send_request(session, url, data=None, set_request=None, head=False):
-    r = PrepReq()
+    r = PrepReq(session)
     if set_request:
         r = set_request(r)
 
