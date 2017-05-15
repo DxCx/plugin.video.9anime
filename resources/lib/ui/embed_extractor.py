@@ -5,6 +5,7 @@ import utils
 import http
 import json
 
+from NineAnimeTokenDecoder import NineAnimeTokenDecoder
 _EMBED_EXTRACTORS = {}
 
 def load_video_from_url(in_url):
@@ -20,7 +21,11 @@ def load_video_from_url(in_url):
 
     for extractor in _EMBED_EXTRACTORS.keys():
         if in_url.startswith(extractor):
-            return _EMBED_EXTRACTORS[extractor](url, page_content)
+            try:
+                return _EMBED_EXTRACTORS[extractor](url, page_content)
+            except Exception as e:
+                print "[*E*]: %s" % e
+
     print "[*E*] No extractor found for %s" % url
     return None
 
@@ -41,8 +46,8 @@ def __check_video_list(refer_url, vidlist):
     nlist = []
     for item in vidlist:
         try:
-            nlist.append((item[0], http.head_request(item[1],
-                                                     set_request=referer).url))
+            temp_req = http.head_request(item[1], set_request=referer)
+            nlist.append((item[0], temp_req.url))
         except Exception, e:
             # Just don't add source.
             pass
@@ -66,9 +71,16 @@ def __9anime_extract_direct(refer_url, grabInfo):
 
 def __extract_9anime(url, page_content):
     episode_id = url.rsplit('/', 1)[1]
-    domain = urlparse.urlparse(url).netloc
-    url = "http://%s/ajax/episode/info?id=%s&update=0" % (domain, episode_id)
-    grabInfo = json.loads(http.send_request(url).text)
+    url_info = urlparse.urlparse(url)
+    domain = url_info.netloc
+    scheme = url_info.scheme
+
+    url_base = "%s://%s" % (scheme, domain)
+    url = "%s/ajax/episode/info?id=%s&update=0" % (url_base, episode_id)
+    set_request = NineAnimeTokenDecoder.set_request("%s/token?v1" % url_base, http.send_request)
+    urlRequest = http.send_request(url, set_request=set_request)
+
+    grabInfo = json.loads(urlRequest.text)
     if 'error' in grabInfo.keys():
         raise Exception('error while trying to fetch info: %s' %
                         grabInfo['error'])
@@ -253,7 +265,9 @@ __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
-__register_extractor("https://openload.co/embed/", __extract_openload)
+# TODO: Openload temporary disabled, see https://github.com/DxCx/plugin.video.9anime/issues/16
+#__register_extractor("https://openload.co/embed/", __extract_openload)
+__register_extractor("https://openload.co/embed/", __ignore_extractor)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
