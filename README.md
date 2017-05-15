@@ -24,6 +24,13 @@ At the moment, this plugin is not hosted under any repository, the only way
 to install it is via zip downloading.
 if you want to host this plugin, please email me at `hagai.co@gmail.com`.
 
+## Contributers
+Pull Requests are always welcome, I'm a big believer of open source projects,
+and unfortunately I don't have enough time to support everyone right away.
+
+I would like to Thanks those who contributed so far:
+ - [githubus11](https://www.github.com/githubus11)
+
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
 instead of using the original one.
