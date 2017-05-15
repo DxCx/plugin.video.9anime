@@ -1,6 +1,7 @@
 #!/usr/local/bin/python2
-import unittest
 import time
+import unittest
+
 from resources.lib.NineAnimeBrowser import NineAnimeBrowser
 
 __all__ = [ "TestBrowser" ]
@@ -16,13 +17,12 @@ class TestBrowser(unittest.TestCase):
     def test_search_site(self):
         "search site finds naruto"
         search_res = self.browser.search_site("Naruto Shippuden")
-        self.assertGreaterEqual(len(search_res), 1)
-        self.assertEqual(search_res[0], {
-            'url': 'animes/naruto-shippuuden.qv3',
-            'is_dir': True,
-            'image': search_res[0]['image'],
-            'name': 'Naruto: Shippuuden'
-        })
+        self.assertGreater(len(search_res), 0)
+
+        search_item = filter(lambda x: x['name'] == 'Naruto: Shippuuden (Dub)', search_res)
+        self.assertEquals(len(search_item), 1)
+        self.assertEquals(search_item[0]['url'], 'animes/naruto-shippuuden-dub.00zr')
+        self.assertEquals(search_item[0]['is_dir'], True)
         self._sleep()
 
     def test_search_with_pages(self):
@@ -77,13 +77,13 @@ class TestBrowser(unittest.TestCase):
     def test_get_genres(self):
         "get_genres returns genere list"
         genre_list = self.browser.get_genres()
-        self.assertGreater(len(genre_list), 10)
-        self.assertEqual(genre_list[0], {
-            'url': 'genre/adventure/1',
+        self.assertGreater(len(genre_list), 0)
+        self.assertIn({
+            'url': 'genre/comedy/1',
             'is_dir': True,
             'image': '',
-            'name': 'Adventure'
-        })
+            'name': 'Comedy'
+        }, genre_list)
         self._sleep()
 
     def test_get_genre(self):
@@ -116,6 +116,12 @@ class TestBrowser(unittest.TestCase):
         self._sleep()
 
     def test_get_episode_sources(self):
+        "get_episode_sources find nartuo's first episode"
+        sources = self.browser.get_episode_sources('one-piece.ov8', 1)
+        self.assertGreaterEqual(len(sources), 3)
+        self._sleep()
+
+    def test_get_episode_video_url(self):
         "get_episode_sources find nartuo's first episode"
         sources = self.browser.get_episode_sources('one-piece.ov8', 1)
         self.assertGreaterEqual(len(sources), 3)
