@@ -23,3 +23,13 @@ Kodi Plugin that let's you watch almost all animes HD and for free.
 At the moment, this plugin is not hosted under any repository, the only way
 to install it is via zip downloading.
 if you want to host this plugin, please email me at `hagai.co@gmail.com`.
+
+## Beware of duplicates & ripoffs
+I've learned that there are people who perfere to copy the plugin under thier name
+instead of using the original one.
+beware of those duplications as they may contain malicous code,
+also, you won't get updates and bugfixes as frequantly.
+personally, i think those kind of people are harming opensource community.
+
+Known Duplications:
+ - Cypher's
