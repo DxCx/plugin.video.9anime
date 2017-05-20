@@ -14,7 +14,7 @@ import math
 
 class NineAnimeTokenDecoder:
     _function_name_regex = re.compile(ur'([^,]+)=function\(')
-    _lines_regex_template = ur'{}\(([^\,a]+)\)'
+    _lines_regex_template = ur'[,;]{}\(([^\,a]+)\)'
     _outer_parentheses_group_regex = re.compile(ur'\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)')
     _TOKEN_COOKIE_NAME = 'reqkey'
 
@@ -23,10 +23,13 @@ class NineAnimeTokenDecoder:
 
     @classmethod
     def decode_token(cls, token):
-        lines = cls._get_lines_to_decode(token)
-        chars = map(lambda x: cls._decode_as_char(x), lines)
-        result = ''.join(chars)
-        return result
+        try:
+            lines = cls._get_lines_to_decode(token)
+            chars = map(lambda x: cls._decode_as_char(x), lines)
+            result = ''.join(chars)
+            return result
+        except:
+            raise Exception(token)
 
     @classmethod
     def set_request(cls, tokenUrl, send_request):
@@ -42,7 +45,8 @@ class NineAnimeTokenDecoder:
     @classmethod
     def _get_lines_to_decode(cls, text):
         function_name = cls._find_function_name(text)
-        lines_regex = cls._lines_regex_template.format(function_name)
+        function_name_escaped = re.escape(function_name)
+        lines_regex = cls._lines_regex_template.format(function_name_escaped)
         matches = list(re.findall(lines_regex, text))
         return matches
 
