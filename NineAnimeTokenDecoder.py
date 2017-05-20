@@ -13,9 +13,9 @@ import re
 import math
 
 class NineAnimeTokenDecoder:
-    #_parentheses_group_regex = r"(\(\d+\))"
-    _outer_parentheses_group_regex = r"\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)"
-    _lines_regex_template = r"{}\(([^\,a]+)\)"
+    _function_name_regex = re.compile(ur'([^,]+)=function\(')
+    _lines_regex_template = ur'{}\(([^\,a]+)\)'
+    _outer_parentheses_group_regex = re.compile(ur'\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)')
     _TOKEN_COOKIE_NAME = 'reqkey'
 
     def __init__(self):
@@ -65,7 +65,7 @@ class NineAnimeTokenDecoder:
 
     @classmethod
     def _recursive_token_multiplier(cls, text):
-        matches = re.findall(cls._outer_parentheses_group_regex, text)
+        matches = cls._outer_parentheses_group_regex.findall(text)
         result = text
         for valNum, val in enumerate(matches):
             if not val.endswith('0)'):
@@ -85,5 +85,5 @@ class NineAnimeTokenDecoder:
 
     @classmethod
     def _find_function_name(cls, text):
-        start_of = text.find('=function(')
-        return text[start_of - 1]
+        res = cls._function_name_regex.search(text, re.UNICODE)
+        return res.groups()[0]
