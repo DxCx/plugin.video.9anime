@@ -4,6 +4,7 @@ import urlparse
 import utils
 import http
 import json
+import time
 
 from NineAnimeTokenDecoder import NineAnimeTokenDecoder
 _EMBED_EXTRACTORS = {}
@@ -14,6 +15,7 @@ def load_video_from_url(in_url):
         reqObj = http.send_request(in_url)
         page_content = reqObj.text
         url = reqObj.url
+        time.sleep(1)
     except http.URLError:
         return None # Dead link, Skip result
     except:
@@ -59,7 +61,11 @@ def __9anime_extract_direct(refer_url, grabInfo):
     url = __relative_url(refer_url, url)
     resp = json.loads(http.send_request(url,
                                         set_request=__set_referer(refer_url)).text)
+
+    possible_error = resp['error'] if 'error' in resp.keys() else 'No-Error-Set'
     if 'data' not in resp.keys():
+        if possible_error == 'deleted':
+            return None
         raise Exception('Failed to parse 9anime direct with error: %s' %
                         resp['error'] if 'error' in resp.keys() else
                         'No-Error-Set')
