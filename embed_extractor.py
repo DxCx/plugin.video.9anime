@@ -15,7 +15,6 @@ def load_video_from_url(in_url):
         reqObj = http.send_request(in_url)
         page_content = reqObj.text
         url = reqObj.url
-        time.sleep(1)
     except http.URLError:
         return None # Dead link, Skip result
     except:
@@ -84,6 +83,8 @@ def __extract_9anime(url, page_content):
     url_base = "%s://%s" % (scheme, domain)
     url = "%s/ajax/episode/info?id=%s&update=0" % (url_base, episode_id)
     set_request = NineAnimeTokenDecoder.set_request("%s/token?v1" % url_base, http.send_request)
+    
+    time.sleep(1)
     urlRequest = http.send_request(url, set_request=set_request)
 
     grabInfo = json.loads(urlRequest.text)
