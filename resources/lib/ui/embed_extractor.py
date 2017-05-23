@@ -4,6 +4,7 @@ import urlparse
 import utils
 import http
 import json
+import time
 
 from NineAnimeTokenDecoder import NineAnimeTokenDecoder
 _EMBED_EXTRACTORS = {}
@@ -59,7 +60,11 @@ def __9anime_extract_direct(refer_url, grabInfo):
     url = __relative_url(refer_url, url)
     resp = json.loads(http.send_request(url,
                                         set_request=__set_referer(refer_url)).text)
+
+    possible_error = resp['error'] if 'error' in resp.keys() else 'No-Error-Set'
     if 'data' not in resp.keys():
+        if possible_error == 'deleted':
+            return None
         raise Exception('Failed to parse 9anime direct with error: %s' %
                         resp['error'] if 'error' in resp.keys() else
                         'No-Error-Set')
@@ -78,6 +83,8 @@ def __extract_9anime(url, page_content):
     url_base = "%s://%s" % (scheme, domain)
     url = "%s/ajax/episode/info?id=%s&update=0" % (url_base, episode_id)
     set_request = NineAnimeTokenDecoder.set_request("%s/token?v1" % url_base, http.send_request)
+    
+    time.sleep(1)
     urlRequest = http.send_request(url, set_request=set_request)
 
     grabInfo = json.loads(urlRequest.text)
