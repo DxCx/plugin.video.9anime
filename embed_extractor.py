@@ -56,7 +56,9 @@ def __check_video_list(refer_url, vidlist):
     return nlist
 
 def __9anime_extract_direct(refer_url, grabInfo):
-    url = "%s?%s" % (grabInfo['grabber'], urllib.urlencode(grabInfo['params']))
+    # grabInfo['grabber'] sometimes ands with /?server=23 so we have to concat with & instead of ?
+    url_parameter_concat = "&" if "?" in grabInfo['grabber'] else "?"
+    url = "%s%s%s" % (grabInfo['grabber'], url_parameter_concat, urllib.urlencode(grabInfo['params']))
     url = __relative_url(refer_url, url)
     resp = json.loads(http.send_request(url,
                                         set_request=__set_referer(refer_url)).text)
