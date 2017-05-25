@@ -57,7 +57,7 @@ def xbmc_add_dir(name, url, iconimage=''):
     u=addon_url(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     liz.setInfo('video', infoLabels={ "Title": name })
-    liz.setProperty("fanart_image", __settings__.getAddonInfo('path') + "/fanart.jpg")
+    liz.setProperty("fanart_image", iconimage)
     ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=True)
     return ok
 
