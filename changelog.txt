@@ -1,5 +1,8 @@
-[B]Next[/B]
+[B]0.0.7[/B]
+- Require Kodi 17+
 - fix for anime list inside a genre (#10)
+- Various bug fixes as 9anime changes
+- use URLResolver for openload sources
 
 [B]0.0.2[/B]
 - fix for domain issues
