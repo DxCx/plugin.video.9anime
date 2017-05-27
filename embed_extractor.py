@@ -85,7 +85,7 @@ def __extract_9anime(url, page_content):
     url_base = "%s://%s" % (scheme, domain)
     url = "%s/ajax/episode/info?id=%s&update=0" % (url_base, episode_id)
     set_request = NineAnimeTokenDecoder.set_request("%s/token?v1" % url_base, http.send_request)
-    
+
     time.sleep(1)
     urlRequest = http.send_request(url, set_request=set_request)
 
@@ -147,6 +147,13 @@ def __extract_swf_player(url, content):
     if not video_info.has_key("url"):
         return None
     return video_info['url']
+
+def __extract_with_urlresolver(url, content):
+    # NOTE: Requires urlresolver dependancy (script.module.urlresolver) in
+    # addon.xml
+
+    import urlresolver
+    return urlresolver.resolve(url);
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
@@ -274,9 +281,7 @@ __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
-# TODO: Openload temporary disabled, see https://github.com/DxCx/plugin.video.9anime/issues/16
-#__register_extractor("https://openload.co/embed/", __extract_openload)
-__register_extractor("https://openload.co/embed/", __ignore_extractor)
+__register_extractor("https://openload.co/embed/", __extract_with_urlresolver)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
