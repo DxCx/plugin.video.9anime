@@ -116,15 +116,9 @@ class TestBrowser(unittest.TestCase):
         self._sleep()
 
     def test_get_episode_sources(self):
-        "get_episode_sources find nartuo's first episode"
+        "get_episode_sources find onepiece's first episode"
         sources = self.browser.get_episode_sources('one-piece.ov8', 1)
-        self.assertGreaterEqual(len(sources), 3)
-        self._sleep()
-
-    def test_get_episode_video_url(self):
-        "get_episode_sources find nartuo's first episode"
-        sources = self.browser.get_episode_sources('one-piece.ov8', 1)
-        self.assertGreaterEqual(len(sources), 3)
+        self.assertGreaterEqual(len(sources), 1)
         self._sleep()
 
 if __name__ == "__main__":
