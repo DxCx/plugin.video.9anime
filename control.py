@@ -62,6 +62,9 @@ def xbmc_add_dir(name, url, iconimage=''):
     return ok
 
 def play_source(link):
+    if callable(link):
+        link = link()
+
     if link:
         xbmcplugin.setResolvedUrl(HANDLE, True, xbmcgui.ListItem(path=link))
     else:
