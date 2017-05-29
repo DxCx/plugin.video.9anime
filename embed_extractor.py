@@ -153,7 +153,7 @@ def __extract_with_urlresolver(url, content):
     # addon.xml
 
     import urlresolver
-    return urlresolver.resolve(url);
+    return lambda: urlresolver.resolve(url);
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
