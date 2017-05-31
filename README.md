@@ -12,32 +12,37 @@ Kodi Plugin that let's you watch almost all animes HD and for free.
 * Add your favorite animes as favorite for easy access later
 * Fast loading times when disabling image extraction.
 
-## Install
+## Installing latest (No auto updates)
 1. Click on 'Download as zip' to the right of this github page.
-2. Enter Kodi
-3. Click on Settings under System
-4. Click on Add-ons to the left
-5. Install from zip
-6. Choose the zip downloaded in option 1
+2. Open up Kodi and click on add ons
+3. Scroll up to the icon of the package and click on it
+4. Scroll to “install from zip file”
+5. Choose the zip downloaded in option 1
+
+## Installing from Repository (with auto updates)
+1. Download repository's zip from [here](https://goo.gl/p9Lde0)
+2. Open up Kodi and click on add ons
+3. Scroll up to the icon of the package and click on it
+4. Scroll to “install from zip file”
+5. Choose the zip downloaded in option 1
+6. Select 'Install from repository'
+7. Select '9Anime Kodi Repository'
+8. Select 'Video add-ons'
+9. Select '9Anime'
 
 ## Firestick
 This step by step guide is for learning purposes only and demonstrates installing the plugin. It assumes that Kodi Krypton has already been installed on to the firestick. It also requires the app “Downloader” (published by AFTVnews) found in the amazon store.
 
- - Search for the app [Downloader] in the amazon app store.
- - download the app and open
- - once opened, enter in the URL https://github.com/DxCx/plugin.video.9anime/archive/master.zip
- then click go. It will download the zip, once downloaded close out the app.
- - Open up Kodi and click on add ons
- - scroll up to the icon of the package and click on it
- - scroll to “install from zip file”
- - scroll down to External Storage and open folder, then open downloader folder. Inside Downloader folder find the master.zip file.
- - Click on the zip file and the plugin will install.
- - Enjoy :tada:
-
-## Repository
-At the moment, this plugin is not hosted under any repository, the only way
-to install it is via zip downloading.
-if you want to host this plugin, please email me at `hagai.co@gmail.com`.
+ 1. Search for the app [Downloader] in the amazon app store, Download the app and open it.
+ 2. Once opened, enter in the URL `https://goo.gl/p9Lde0`
+ then click go.
+ It will download the zip, once downloaded close out the app.
+ 3. Open up Kodi and click on add ons
+ 4. Scroll up to the icon of the package and click on it
+ 5. Scroll to “install from zip file”
+ 6. Scroll down to External Storage and open folder, then open downloader folder. Inside Downloader folder find the master.zip file.
+ 7. Click on the zip file and the plugin will install.
+ 8. Continue instructions from bullet No.6 of Installing from repostiory
 
 ## Contributers
 Pull Requests are always welcome, I'm a big believer of open source projects,
@@ -45,6 +50,7 @@ and unfortunately I don't have enough time to support everyone right away.
 
 I would like to Thanks those who contributed so far:
  - [githubus11](https://www.github.com/githubus11)
+ - [hoppler](https://www.github.com/hoppler)
 
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
