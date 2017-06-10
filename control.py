@@ -68,8 +68,13 @@ def play_source(link):
 
     if link:
         linkInfo = http.head_request(link);
-        item = xbmcgui.ListItem(path=linkInfo.geturl())
-        item.setProperty('mimetype', linkInfo.info()['Content-type'])
+        if linkInfo.status_code != 200:
+            raise Exception('could not resolve %s. status_code=%d' %
+                            (link, linkInfo.status_code))
+
+        item = xbmcgui.ListItem(path=linkInfo.url)
+        if 'Content-Type' in linkInfo.headers:
+            item.setProperty('mimetype', linkInfo.headers['Content-Type'])
 
         xbmcplugin.setResolvedUrl(HANDLE, True, item)
     else:
