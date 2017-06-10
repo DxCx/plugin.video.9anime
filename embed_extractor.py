@@ -164,9 +164,10 @@ def __extract_mycloud(url, content):
     if not playlist_url.startswith("http"):
         playlist_url = "https://" + playlist_url
 
+    joinUrls = lambda x: (x[0], urlparse.urljoin(playlist_url, x[1]).rstrip())
     playlist_content = http.send_request(playlist_url, set_request=__set_referer(url)).text
     playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
-    playlist_entries_full = map(lambda x: (x[0], urlparse.urljoin(playlist_url, x[1])), playlist_entries)
+    playlist_entries_full = map(joinUrls, playlist_entries)
     return playlist_entries_full
 
 # Thanks to https://github.com/munix/codingground
