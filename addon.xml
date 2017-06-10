@@ -1,16 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.9anime"
-       name="9Anime"
-       version="0.0.7"
-       provider-name="Hagai Cohen">
+<addon id="plugin.video.9anime" name="9Anime" provider-name="Hagai Cohen" version="0.0.8">
   <requires>
-    <import addon="xbmc.python" version="2.25.0"/>
-    <import addon="script.module.requests" version="2.12.4"/>
-    <import addon="script.common.plugin.cache" version="2.5.5"/>
-    <import addon="script.module.urlresolver" version="3.0.31"/>
+    <import addon="xbmc.python" version="2.25.0" />
+    <import addon="script.module.requests" version="2.12.4" />
+    <import addon="script.common.plugin.cache" version="2.5.5" />
+    <import addon="script.module.urlresolver" version="3.0.31" />
   </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
+  <extension library="default.py" point="xbmc.python.pluginsource">
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
