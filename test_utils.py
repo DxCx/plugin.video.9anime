@@ -38,11 +38,21 @@ class TestUtils(unittest.TestCase):
     #         (u'OpenLoad', u'http://9anime.is/watch/one-piece.ov8/xry4kz'),
     #     ])
 
-    def test_fetch_nineanime_direct(self):
+    # TODO: All direct links are removed atm.
+    # def test_fetch_nineanime_direct(self):
+    #     "fetch_sources fetches 9anime (Direct)"
+    #     self._test_sources([
+    #         (u'Server F1', u'http://9anime.to/watch/one-piece.ov8/90v58x'),
+    #         (u'Server F2', u'http://9anime.to/watch/one-piece.ov8/6wp727')
+    #     ])
+
+    def test_fetch_nineanime_mycloud(self):
         "fetch_sources fetches 9anime (Direct)"
         self._test_sources([
-            (u'Server F1', u'http://9anime.is/watch/one-piece.ov8/90v58x'),
-            (u'Server F2', u'http://9anime.is/watch/one-piece.ov8/6wp727')
+            (u'MyCloud',
+             u'https://9anime.to/watch/boruto-naruto-next-generations.97vm/0qk7k9'),
+            (u'MyCloud',
+             u'https://9anime.to/watch/boruto-naruto-next-generations.97vm/jpm5qy')
         ])
 
     def test_fetch_abvideo(self):

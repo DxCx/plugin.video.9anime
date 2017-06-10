@@ -4,6 +4,7 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
+import http
 
 try:
     import StorageServer
@@ -66,7 +67,11 @@ def play_source(link):
         link = link()
 
     if link:
-        xbmcplugin.setResolvedUrl(HANDLE, True, xbmcgui.ListItem(path=link))
+        linkInfo = http.head_request(link);
+        item = xbmcgui.ListItem(path=linkInfo.geturl())
+        item.setProperty('mimetype', linkInfo.info()['Content-type'])
+
+        xbmcplugin.setResolvedUrl(HANDLE, True, item)
     else:
         xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
 
