@@ -94,7 +94,11 @@ def __extract_9anime(url, page_content):
         raise Exception('error while trying to fetch info: %s' %
                         grabInfo['error'])
     if grabInfo['type'] == 'iframe':
-        return load_video_from_url(grabInfo['target'])
+        target = grabInfo['target']
+        if target.startswith('//'):
+            target = "%s:%s" % (url_info.scheme, target)
+
+        return load_video_from_url(target)
     elif grabInfo['type'] == 'direct':
         return __9anime_extract_direct(url, grabInfo)
 
