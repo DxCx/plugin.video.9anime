@@ -4,6 +4,7 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
+import http
 
 try:
     import StorageServer
@@ -57,7 +58,7 @@ def xbmc_add_dir(name, url, iconimage=''):
     u=addon_url(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     liz.setInfo('video', infoLabels={ "Title": name })
-    liz.setProperty("fanart_image", __settings__.getAddonInfo('path') + "/fanart.jpg")
+    liz.setProperty("fanart_image", iconimage)
     ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=True)
     return ok
 
@@ -66,7 +67,16 @@ def play_source(link):
         link = link()
 
     if link:
-        xbmcplugin.setResolvedUrl(HANDLE, True, xbmcgui.ListItem(path=link))
+        linkInfo = http.head_request(link);
+        if linkInfo.status_code != 200:
+            raise Exception('could not resolve %s. status_code=%d' %
+                            (link, linkInfo.status_code))
+
+        item = xbmcgui.ListItem(path=linkInfo.url)
+        if 'Content-Type' in linkInfo.headers:
+            item.setProperty('mimetype', linkInfo.headers['Content-Type'])
+
+        xbmcplugin.setResolvedUrl(HANDLE, True, item)
     else:
         xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
 
