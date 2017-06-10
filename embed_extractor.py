@@ -153,7 +153,17 @@ def __extract_with_urlresolver(url, content):
     # addon.xml
 
     import urlresolver
-    return lambda: urlresolver.resolve(url);
+    return lambda: urlresolver.resolve(url)
+
+def __extract_mycloud(url, content):
+    playlist_url = re.findall("\"file\"\s*:\s*\"\/*(.+)\"", content)[0]
+    if not playlist_url.startswith("http"):
+        playlist_url = "https://" + playlist_url
+
+    playlist_content = http.send_request(playlist_url, set_request=__set_referer(url)).text
+    playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
+    playlist_entries_full = map(lambda x: (x[0], urlparse.urljoin(playlist_url, x[1])), playlist_entries)
+    return playlist_entries_full
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
@@ -282,6 +292,10 @@ __register_extractor("http://embed.videoweed.es/", __extract_swf_player)
 __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
 __register_extractor("https://openload.co/embed/", __extract_with_urlresolver)
+
+__register_extractor(["https://mycloud.to/embed",
+                      "http://mycloud.to/embed"],
+                     __extract_mycloud)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
