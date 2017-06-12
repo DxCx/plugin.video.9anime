@@ -1,3 +1,5 @@
+[B]0.0.9[/B]
+- Fix for new token in url mechanizem (Thanks hoppler)
 [B]0.0.8[/B]
 - add support for MyCloud provider
 [B]0.0.7[/B]
