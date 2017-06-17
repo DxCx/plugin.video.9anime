@@ -14,6 +14,16 @@ class TestBrowser(unittest.TestCase):
     def _sleep(self):
         time.sleep(1)
 
+    def test_dubbed(self):
+        "search site finds recent dubbed"
+        search_res = self.browser.get_recent_dubbed()
+        self.assertGreater(len(search_res), 1)
+
+    def test_subbed(self):
+        "search site finds recent subbed"
+        search_res = self.browser.get_recent_subbed()
+        self.assertGreater(len(search_res), 1)
+
     def test_search_site(self):
         "search site finds naruto"
         search_res = self.browser.search_site("Naruto Shippuden")

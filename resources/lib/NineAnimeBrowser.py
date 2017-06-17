@@ -27,6 +27,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
     _EPISODE_LINK_RE = re.compile("<li><div><a\shref=\"/([-\w\s\d]+?)/(\d+?)\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong></a><i\sclass=\"anititle\">(.+?)</i>", re.DOTALL)
 
+    def _get_by_filter(self, filterName, filterData, page=1):
+        data = dict(filterData)
+        data['page'] = page
+        url = self._to_url("filter")
+        return self._process_anime_view(url, data, "%s/%%d" % filterName, page)
+
     def _parse_anime_view(self, res):
         name = res[2]
         image = res[1]
@@ -86,6 +92,20 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         }
         url = self._to_url("search")
         return self._process_anime_view(url, data, "search/%s/%%d" % search_string, page)
+
+    def get_recent_dubbed(self,  page=1):
+        return self._get_by_filter('recent_dubbed', {
+            "language" : "dubbed",
+            "sort" : "episode_last_added_at:desc",
+            "status[]" : "airing"
+        }, page);
+
+    def get_recent_subbed(self,  page=1):
+        return self._get_by_filter('recent_subbed', {
+            "language" : "subbed",
+            "sort" : "episode_last_added_at:desc",
+            "status[]" : "airing"
+        }, page);
 
     def get_latest(self, page=1):
         data = {

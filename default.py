@@ -8,8 +8,10 @@ AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
     (control.lang(30000), "latest"),
     (control.lang(30001), "newest"),
-    (control.lang(30002), "genres"),
-    (control.lang(30003), "search")
+    (control.lang(30002), "recent_subbed"),
+    (control.lang(30003), "recent_dubbed"),
+    (control.lang(30004), "genres"),
+    (control.lang(30005), "search")
 ]
 
 _BROWSER = NineAnimeBrowser()
@@ -33,6 +35,22 @@ def LATEST(payload):
 @route('latest/*')
 def LATEST_PAGES(payload):
     return control.draw_items(_BROWSER.get_latest(int(payload)))
+
+@route('recent_subbed')
+def SUBBED(payload):
+    return control.draw_items(_BROWSER.get_recent_subbed())
+
+@route('recent_subbed/*')
+def SUBBED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_recent_subbed(int(payload)))
+
+@route('recent_dubbed')
+def DUBBED(payload):
+    return control.draw_items(_BROWSER.get_recent_dubbed())
+
+@route('recent_dubbed/*')
+def DUBBED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_recent_dubbed(int(payload)))
 
 @route('search')
 def SEARCH(payload):
