@@ -43,6 +43,23 @@ This step by step guide is for learning purposes only and demonstrates installin
  6. Scroll down to External Storage and open folder, then open downloader folder. Inside Downloader folder find the master.zip file.
  7. Click on the zip file and the plugin will install.
  8. Continue instructions from bullet No.6 of Installing from repostiory
+ 
+ ## Android Box
+This step by step guide will implement “es File Explorer” app from the google play store.
+
+1. In es file explorer scroll on the sidetool bar to favorites click to open dropdown menu.
+2. choose ADD, In the two options enter in; 
+Path: `https://github.com/dxcx/plugin.video.9anime`
+Name: dxcx
+3. on the side tool bar scroll down to the newly added dxcx and click it.this will now open up the github page where you will click the "here" link under the “Installing from repository” heading.
+4. after it downloads exit out of ex file ex file explorer and open Kodi.
+5. In Kodi click on addons
+6. click the icon that looks like an open package on the top left
+7. click install from zip
+8. click external storage folder
+9. click download folder
+10. click repo.plugin.video.9anime-0.0.3 zip file
+11. continue instructions from bullet No. 6 of Installing from repository.
 
 ## Contributers
 Pull Requests are always welcome, I'm a big believer of open source projects,
