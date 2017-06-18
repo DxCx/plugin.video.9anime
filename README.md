@@ -68,6 +68,7 @@ and unfortunately I don't have enough time to support everyone right away.
 I would like to Thanks those who contributed so far:
  - [githubus11](https://www.github.com/githubus11)
  - [hoppler](https://www.github.com/hoppler)
+ - [tinymovingparts](https://github.com/tinymovingparts)
 
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
