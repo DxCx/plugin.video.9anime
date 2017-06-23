@@ -69,6 +69,7 @@ I would like to Thanks those who contributed so far:
  - [githubus11](https://www.github.com/githubus11)
  - [hoppler](https://www.github.com/hoppler)
  - [tinymovingparts](https://github.com/tinymovingparts)
+ - [Cozmmando](https://github.com/Cozmmando)
 
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
