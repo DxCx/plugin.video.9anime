@@ -17,6 +17,7 @@ MENU_ITEMS = [
 ]
 
 _BROWSER = NineAnimeBrowser()
+control.setContent('tvshows');
 
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
