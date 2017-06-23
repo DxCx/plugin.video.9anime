@@ -9,8 +9,8 @@ MENU_ITEMS = [
     (control.lang(30000), "latest"),
     (control.lang(30001), "newest"),
     (control.lang(30002), "recent_subbed"),
-    (control.lang(30003), "recent_dubbed"),
-    (control.lang(30004), "popular_subbed"),
+    (control.lang(30003), "popular_subbed"),
+    (control.lang(30004), "recent_dubbed"),
     (control.lang(30005), "popular_dubbed"),
     (control.lang(30006), "genres"),
     (control.lang(30007), "search")
@@ -69,7 +69,7 @@ def POPDUBBED(payload):
 @route('popular_dubbed/*')
 def POPDUBBED_PAGES(payload):
     return control.draw_items(_BROWSER.get_popular_dubbed(int(payload)))
-	
+
 @route('search')
 def SEARCH(payload):
     query = control.keyboard(control.lang(30002))
