@@ -17,6 +17,9 @@ __settings__ = xbmcaddon.Addon(ADDON_NAME)
 __language__ = __settings__.getLocalizedString
 CACHE = StorageServer.StorageServer("%s.animeinfo" % ADDON_NAME, 24)
 
+def setContent(contentType):
+    xbmcplugin.setContent(HANDLE, contentType)
+
 def getSetting(key):
     return __settings__.getSetting(key)
 
