@@ -1,3 +1,5 @@
+[B]0.0.11[/B]
+- Add most popluar subbed & dubbed sections
 [B]0.0.10[/B]
 - Add recent Subbed & Dubbed support
 [B]0.0.9[/B]
