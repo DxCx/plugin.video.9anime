@@ -7,8 +7,10 @@
 	<string id="30001">Newest</string>
 	<string id="30002">Recent Subbed</string>
 	<string id="30003">Recent Dubbed</string>
-	<string id="30004">Genres</string>
-	<string id="30005">Search</string>
+	<string id="30004">Popular Subbed</string>
+	<string id="30005">Popular Dubbed</string>
+	<string id="30006">Genres</string>
+	<string id="30007">Search</string>
 
 	<string id="30100">Fetching Sources</string>
 	<string id="30101">Processing %s</string>

@@ -10,8 +10,10 @@ MENU_ITEMS = [
     (control.lang(30001), "newest"),
     (control.lang(30002), "recent_subbed"),
     (control.lang(30003), "recent_dubbed"),
-    (control.lang(30004), "genres"),
-    (control.lang(30005), "search")
+    (control.lang(30004), "popular_subbed"),
+    (control.lang(30005), "popular_dubbed"),
+    (control.lang(30006), "genres"),
+    (control.lang(30007), "search")
 ]
 
 _BROWSER = NineAnimeBrowser()
@@ -52,6 +54,22 @@ def DUBBED(payload):
 def DUBBED_PAGES(payload):
     return control.draw_items(_BROWSER.get_recent_dubbed(int(payload)))
 
+@route('popular_subbed')
+def POPSUBBED(payload):
+    return control.draw_items(_BROWSER.get_popular_subbed())
+
+@route('popular_subbed/*')
+def POPSUBBED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_popular_subbed(int(payload)))
+
+@route('popular_dubbed')
+def POPDUBBED(payload):
+    return control.draw_items(_BROWSER.get_popular_dubbed())
+
+@route('popular_dubbed/*')
+def POPDUBBED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_popular_dubbed(int(payload)))
+	
 @route('search')
 def SEARCH(payload):
     query = control.keyboard(control.lang(30002))

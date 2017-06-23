@@ -7,8 +7,10 @@
 	<string id="30001">החדשים ביותר</string>
 	<string id="30002">מתורגמים</string>
 	<string id="30003">מדובבים</string>
-	<string id="30004">לפי סיגנון</string>
-	<string id="30005">חיפוש</string>
+	<string id="30004">מתורגם פופולרי</string>
+	<string id="30005">פופולרי</string>
+	<string id="30006">לפי סיגנון</string>
+	<string id="30007">חיפוש</string>
 
 	<string id="30100">מחפש מקורות</string>
 	<string id="30101">מעבד %s</string>

@@ -107,6 +107,18 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "status[]" : "airing"
         }, page);
 
+    def get_popular_dubbed(self,  page=1):
+        return self._get_by_filter('popular_dubbed', {
+            "language" : "dubbed",
+            "sort" : "views:desc"
+        }, page);
+
+    def get_popular_subbed(self,  page=1):
+        return self._get_by_filter('popular_subbed', {
+            "language" : "subbed",
+            "sort" : "views:desc"
+        }, page);
+		
     def get_latest(self, page=1):
         data = {
             "page": page,
