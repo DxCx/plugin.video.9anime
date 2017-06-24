@@ -1,3 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
+	<category label="General">
+		<setting id="reverseorder" type="labelenum" label="Episode order" values="Ascending|Descending" default="Descending"/>
+	</category>
+	<category label="Servers">
+		<setting id="serverchoice" type="labelenum" label="Server choice" values="OpenLoad|MyCloud|All" default="All"/>
+		<setting id="sortres" enable=!eq(-1,0) label="Sort by resolution (MyCloud)" type="labelenum" values="None|Best|Worst" default="None"/>
+		<setting id="autoplay" label="Automatically play first result" type="bool" default="false"/>
+	</category>
 </settings>

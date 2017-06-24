@@ -21,7 +21,12 @@ control.setContent('tvshows');
 
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
-    return control.draw_items(_BROWSER.get_anime_episodes(animeurl))
+    order = control.getSetting('reverseorder')
+    episodes = _BROWSER.get_anime_episodes(animeurl)
+    if ( "Ascending" in order ):
+        episodes = reversed(episodes)
+
+    return control.draw_items(episodes)
 
 @route('newest')
 def NEWEST(payload):
@@ -96,12 +101,24 @@ def GENRE_ANIMES(payload):
 @route('play/*')
 def PLAY(payload):
     anime_url, episode = payload.rsplit("/", 1)
-    s = SourcesList(_BROWSER.get_episode_sources(anime_url,
-                                                           int(episode)), {
-                        'title': control.lang(30100),
-                        'processing': control.lang(30101),
-                        'choose': control.lang(30102),
-                        'notfound': control.lang(30103),
+    sources = _BROWSER.get_episode_sources(anime_url, int(episode))
+
+    prefereBest = None
+    prefereBestSetting = control.getSetting('sortres')
+    if 'None' not in prefereBestSetting:
+        prefereBest = True if 'Best' in prefereBestSetting else False
+
+    autoplay = True if 'true' in control.getSetting('autoplay') else False
+
+    serverChoice = control.getSetting('serverchoice')
+    if 'All' not in serverChoice:
+        sources = filter(lambda x: x[0] in serverChoice, sources)
+
+    s = SourcesList(sources, autoplay, prefereBest, {
+        'title': control.lang(30100),
+        'processing': control.lang(30101),
+        'choose': control.lang(30102),
+        'notfound': control.lang(30103),
     })
     return control.play_source(s.get_video_link())
 
