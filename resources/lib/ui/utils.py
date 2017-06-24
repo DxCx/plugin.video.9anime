@@ -9,7 +9,8 @@ def allocate_item(name, url, is_dir=False, image=''):
     new_res['url'] = url
     return new_res
 
-def fetch_sources(sources, dialog, raise_exceptions=False):
+def fetch_sources(sources, dialog, raise_exceptions=False, autoplay=False,
+                  prefereBest=None):
     fetched_sources = []
     factor = 100.0 / len(sources)
 
@@ -24,6 +25,10 @@ def fetch_sources(sources, dialog, raise_exceptions=False):
             if type(fetched_urls) is not list:
                 fetched_urls = [('', fetched_urls)]
 
+            if prefereBest is not None:
+                fetched_urls = sorted(fetched_urls, key=lambda x: x[0],
+                                      reverse=prefereBest)
+
             for label, fetched_url in fetched_urls:
                 if fetched_url is None:
                     print "Skipping invalid source %s" % name
@@ -33,6 +38,9 @@ def fetch_sources(sources, dialog, raise_exceptions=False):
                 fetched_sources.append(("%03d | %s%s" %
                                        (len(fetched_sources) + 1, name, label),
                                         fetched_url))
+                if autoplay:
+                    return dict(fetched_sources)
+
             dialog.update(int(i * factor))
         except Exception, e:
             print "[*E*] Skiping %s because Exception at parsing" % name

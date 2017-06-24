@@ -4,7 +4,7 @@ import re
 import xbmcgui
 
 class SourcesList(object):
-    def __init__(self, raw_results, strings = None):
+    def __init__(self, raw_results, autoplay = False, prefereBest = None, strings = None):
         self._raw_results = raw_results
         if not strings or not len(strings):
             strings = {
@@ -14,11 +14,13 @@ class SourcesList(object):
                 'notfound': 'Couldn\'t find eliable sources',
             }
 
+        self._autoplay = autoplay
         self._strings = strings
         self._sources = []
+        self._prefereBest = prefereBest
 
     def _fetch_sources(self, sources, dialog):
-        fetched_sources = fetch_sources(sources, dialog)
+        fetched_sources = fetch_sources(sources, dialog, False, self._autoplay, self._prefereBest)
         if not fetched_sources:
             return None
 
