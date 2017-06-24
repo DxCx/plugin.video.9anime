@@ -21,7 +21,12 @@ control.setContent('tvshows');
 
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
-    return control.draw_items(_BROWSER.get_anime_episodes(animeurl))
+    order = control.getSetting('reverseorder')
+    episodes = _BROWSER.get_anime_episodes(animeurl)
+    if ( "Ascending" in order ):
+        episodes = reversed(episodes)
+
+    return control.draw_items(episodes)
 
 @route('newest')
 def NEWEST(payload):
