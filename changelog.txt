@@ -1,3 +1,5 @@
+[B]0.0.13[/B]
+- Add support for RapidVideo sources
 [B]0.0.12[/B]
 - add support for autoplay
 = add support for server selection ahead
