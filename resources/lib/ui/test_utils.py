@@ -46,6 +46,15 @@ class TestUtils(unittest.TestCase):
     #         (u'Server F2', u'http://9anime.to/watch/one-piece.ov8/6wp727')
     #     ])
 
+    def test_fetch_nineanime_rapidvideo(self):
+        "fetch_sources fetches 9anime (RapidVideo"
+        self._test_sources([
+            (u'RapidVideo',
+             u'https://9anime.to/watch/boku-no-hero-academia-2nd-season.6z94/20r9l2'),
+            (u'RapidVideo',
+             u'https://9anime.to/watch/boku-no-hero-academia-2nd-season.6z94/mjxqx7')
+        ])
+
     def test_fetch_nineanime_mycloud(self):
         "fetch_sources fetches 9anime (Direct)"
         self._test_sources([
