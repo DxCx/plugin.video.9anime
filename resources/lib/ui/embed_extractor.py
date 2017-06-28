@@ -77,6 +77,14 @@ def __9anime_extract_direct(refer_url, grabInfo):
 
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
+def __extract_rapidvideo(url, page_content):
+    SETUP_RE = re.compile("\.setup\(([^\)]+)\);")
+    SOURCES_RE = re.compile("\"sources\":\s+(\[[^\]]+\])")
+    setupParams = SETUP_RE.findall(page_content)[0]
+    sources = json.loads(SOURCES_RE.findall(setupParams)[0])
+
+    return __check_video_list(url, map(lambda x: (x['label'], x['file']), sources))
+
 def __extract_9anime(url, page_content):
     episode_id = url.rsplit('/', 1)[1]
     url_info = urlparse.urlparse(url)
@@ -306,6 +314,9 @@ __register_extractor("https://openload.co/embed/", __extract_with_urlresolver)
 __register_extractor(["https://mycloud.to/embed",
                       "http://mycloud.to/embed"],
                      __extract_mycloud)
+
+__register_extractor(["https://www.rapidvideo.com/e/"],
+                     __extract_rapidvideo)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
