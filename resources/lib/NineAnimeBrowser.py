@@ -6,7 +6,7 @@ from ui import http
 from ui.NineAnimeTokenDecoder import NineAnimeTokenDecoder
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
-    _BASE_URL = "http://9anime.is"
+    _BASE_URL = "http://9anime.to"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<a\shref=\".+?/watch/(.+?)\"\sclass=\"poster\"[^>]*?>\s<img\ssrc=\".+?url=([^\"]+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
     _PAGES_RE = \
@@ -118,7 +118,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "language" : "subbed",
             "sort" : "views:desc"
         }, page);
-		
+
     def get_latest(self, page=1):
         data = {
             "page": page,
