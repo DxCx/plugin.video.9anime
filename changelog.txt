@@ -1,3 +1,5 @@
+[B]0.0.14[/B]
+- Change domain back to 9anime.to
 [B]0.0.13[/B]
 - Add support for RapidVideo sources
 [B]0.0.12[/B]
