@@ -20,7 +20,7 @@ class NineAnimeUrlExtender:
         for i in params:
             o += cls._s(cls._a(DD + i[0], i[1]))
 
-        return o
+        return o - 30
 
     @classmethod
     def _s(cls, t):
