@@ -96,7 +96,7 @@ def __extract_9anime(url, page_content):
     ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
     extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0, ts_value)
 
-    url = "%s/ajax/episode/info?ts=%s&_=%s&id=%s&update=0" % (url_base, ts_value, extra_param, episode_id)
+    url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&update=0" % (url_base, ts_value, extra_param, episode_id)
     set_request = NineAnimeTokenDecoder.set_request("%s/token?v1" % url_base, http.send_request)
 
     time.sleep(1)
