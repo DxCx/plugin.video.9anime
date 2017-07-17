@@ -1,3 +1,5 @@
+[B]0.0.16[/B]
+- Proper fix for token change
 [B]0.0.15[/B]
 - Hotfix for 9anime token change
 [B]0.0.14[/B]
