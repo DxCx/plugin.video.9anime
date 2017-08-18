@@ -19,6 +19,17 @@ MENU_ITEMS = [
 _BROWSER = NineAnimeBrowser()
 control.setContent('tvshows');
 
+
+def sortResultsByRes(fetched_urls):
+    prefereResSetting = utils.parse_resolution_of_source(control.getSetting('prefres'))
+
+    filtered_urls = filter(lambda x: utils.parse_resolution_of_source(x[0]) <=
+                           prefereResSetting, fetched_urls)
+
+    return sorted(filtered_urls, key=lambda x:
+                  utils.parse_resolution_of_source(x[0]),
+                  reverse=True)
+
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
     order = control.getSetting('reverseorder')
@@ -103,18 +114,13 @@ def PLAY(payload):
     anime_url, episode = payload.rsplit("/", 1)
     sources = _BROWSER.get_episode_sources(anime_url, int(episode))
 
-    prefereBest = None
-    prefereBestSetting = control.getSetting('sortres')
-    if 'None' not in prefereBestSetting:
-        prefereBest = True if 'Best' in prefereBestSetting else False
-
-    autoplay = True if 'true' in control.getSetting('autoplay') else False
-
     serverChoice = control.getSetting('serverchoice')
     if 'All' not in serverChoice:
         sources = filter(lambda x: x[0] in serverChoice, sources)
 
-    s = SourcesList(sources, autoplay, prefereBest, {
+    autoplay = True if 'true' in control.getSetting('autoplay') else False
+
+    s = SourcesList(sources, autoplay, sortResultsByRes, {
         'title': control.lang(30100),
         'processing': control.lang(30101),
         'choose': control.lang(30102),
