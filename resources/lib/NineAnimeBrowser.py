@@ -14,9 +14,9 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _PAGES_TOTAL_RE = \
     re.compile("<span\sclass=\"total\">(\d+)<\/span>", re.DOTALL)
     _GENRES_BOX_RE = \
-    re.compile("<a>Genre</a>.+?<ul\sclass=\"sub\">(.+?)</ul>", re.DOTALL)
+    re.compile("<a>Genre</a>\s<ul\sclass=\"sub\">(.+?)</ul>", re.DOTALL)
     _GENRE_LIST_RE = \
-    re.compile("<li><a\shref=\".+?\/genre\/(.+?)\"\stitle=\"(.+?)\">.+?</li>",
+    re.compile("<li><a\shref=\"/genre\/(.+?)\"\stitle=\"(.+?)\">",
                re.DOTALL)
     _EPISODES_RE = \
     re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
@@ -137,8 +137,8 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         res = self._get_request(self._to_url("/watch"))
         genres_box = self._GENRES_BOX_RE.findall(res)[0]
         generes = self._GENRE_LIST_RE.findall(genres_box)
-        generes = [(i[1], "genre/%s/1" % i[0]) for i in generes]
-        return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes)
+        generes_out = [(i[1], "genre/%s/1" % i[0]) for i in generes]
+        return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes_out)
 
     def get_genre(self, name, page=1):
         data = {
@@ -147,20 +147,16 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("genre/%s" % name)
         return self._process_anime_view(url, data, "genre/%s/%%d" % name, page)
 
-    def get_anime_episodes(self, anime_url):
+    def get_anime_episodes(self, anime_url, returnDirectory):
         servers = self._get_anime_info(anime_url)
         mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
         server = servers[mostSources]
-
-        return map(lambda x: utils.allocate_item(x['name'], x['url'], False, ''), server)
+        return map(lambda x: utils.allocate_item(x['name'], x['url'], returnDirectory, ''), server)
 
     def get_episode_sources(self, anime_url, episode):
         servers = self._get_anime_info(anime_url)
         # server list to server -> source
-        sources = map(lambda x: (x[0],
-                              filter(lambda y: y['id'] == episode,
-                                     x[1])),
-                   servers.iteritems())
+        sources = map(lambda x: (x[0], filter(lambda y: y['id'] == episode,x[1])), servers.iteritems())
         sources = filter(lambda x: len(x[1]) != 0, sources)
         sources = map(lambda x: (x[0], x[1][0]['source']), sources)
         return sources

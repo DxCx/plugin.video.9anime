@@ -3,6 +3,7 @@ from resources.lib.ui import utils
 from resources.lib.ui.SourcesList import SourcesList
 from resources.lib.ui.router import route, router_process
 from resources.lib.NineAnimeBrowser import NineAnimeBrowser
+import urlparse
 
 AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
@@ -13,12 +14,23 @@ MENU_ITEMS = [
     (control.lang(30004), "recent_dubbed"),
     (control.lang(30005), "popular_dubbed"),
     (control.lang(30006), "genres"),
-    (control.lang(30007), "search")
+    (control.lang(30007), "search"),
+    (control.lang(30008), "settings")
 ]
+SERVER_CHOICES = {
+    "serverf2": "Server F2",
+    "serverf4": "Server F4",
+    "serverrapid": "RapidVideo",
+    "servermycloud": "MyCloud",
+    "serveropenload": "OpenLoad",
+}
 
 _BROWSER = NineAnimeBrowser()
 control.setContent('tvshows');
 
+def isDirectoryStyle():
+    style = control.getSetting('displaystyle')
+    return "Directory" == style
 
 def sortResultsByRes(fetched_urls):
     prefereResSetting = utils.parse_resolution_of_source(control.getSetting('prefres'))
@@ -30,13 +42,16 @@ def sortResultsByRes(fetched_urls):
                   utils.parse_resolution_of_source(x[0]),
                   reverse=True)
 
+@route('settings')
+def SETTINGS(payload):
+    return control.settingsMenu();
+
 @route('animes/*')
 def ANIMES_PAGE(animeurl):
     order = control.getSetting('reverseorder')
-    episodes = _BROWSER.get_anime_episodes(animeurl)
+    episodes = _BROWSER.get_anime_episodes(animeurl, isDirectoryStyle())
     if ( "Ascending" in order ):
         episodes = reversed(episodes)
-
     return control.draw_items(episodes)
 
 @route('newest')
@@ -114,9 +129,10 @@ def PLAY(payload):
     anime_url, episode = payload.rsplit("/", 1)
     sources = _BROWSER.get_episode_sources(anime_url, int(episode))
 
-    serverChoice = control.getSetting('serverchoice')
-    if 'All' not in serverChoice:
-        sources = filter(lambda x: x[0] in serverChoice, sources)
+    serverChoice = filter(lambda x:
+        control.getSetting(x[0]) == 'true', SERVER_CHOICES.iteritems())
+    serverChoice = map(lambda x: x[1], serverChoice)
+    sources = filter(lambda x: x[0] in serverChoice, sources)
 
     autoplay = True if 'true' in control.getSetting('autoplay') else False
 
@@ -126,10 +142,23 @@ def PLAY(payload):
         'choose': control.lang(30102),
         'notfound': control.lang(30103),
     })
-    return control.play_source(s.get_video_link())
+
+    if isDirectoryStyle():
+        if s._read_sources():
+            items = sorted(s._sources.iteritems(), key=lambda x: x[0])
+            items = [(title[5:], url) for title, url in items]
+            items = map(lambda x: utils.allocate_item(x[0], 'playlink&url=/'+x[1], False, ''), items)
+            return control.draw_items(items)
+    else:
+        return control.play_source(s.get_video_link())
+
+@route('playlink*')
+def PLAY_SOURCE(payload):
+    return control.play_source(urlparse.unquote(payload))
 
 @route('')
 def LIST_MENU(payload):
     return control.draw_items([utils.allocate_item(name, url, True) for name, url in MENU_ITEMS])
 
 router_process(control.get_plugin_url())
+

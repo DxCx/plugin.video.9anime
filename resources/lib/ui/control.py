@@ -20,6 +20,9 @@ CACHE = StorageServer.StorageServer("%s.animeinfo" % ADDON_NAME, 24)
 def setContent(contentType):
     xbmcplugin.setContent(HANDLE, contentType)
 
+def settingsMenu():
+    return xbmcaddon.Addon().openSettings()
+
 def getSetting(key):
     return __settings__.getSetting(key)
 

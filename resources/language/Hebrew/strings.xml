@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<!-- Category strings -->
 	<string id="20000">חלץ תמונות: </string>
@@ -11,6 +10,7 @@
 	<string id="30005">מדובבים פופולרים</string>
 	<string id="30006">לפי סיגנון</string>
 	<string id="30007">חיפוש</string>
+	<string id="30008">הגדרות</string>
 
 	<string id="30100">מחפש מקורות</string>
 	<string id="30101">מעבד %s</string>
