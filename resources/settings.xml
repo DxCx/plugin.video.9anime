@@ -5,7 +5,7 @@
 	</category>
 	<category label="Servers">
 		<setting id="serverchoice" type="labelenum" label="Server choice" values="OpenLoad|MyCloud|All" default="All"/>
-		<setting id="sortres" enable=!eq(-1,0) label="Sort by resolution (MyCloud)" type="labelenum" values="None|Best|Worst" default="None"/>
+		<setting id="prefres" label="Prefere Resolution" type="labelenum" values="360p|480p|720p|1080p" default="1080p"/>
 		<setting id="autoplay" label="Automatically play first result" type="bool" default="false"/>
 	</category>
 </settings>
