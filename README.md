@@ -70,6 +70,7 @@ I would like to Thanks those who contributed so far:
  - [hoppler](https://www.github.com/hoppler)
  - [tinymovingparts](https://github.com/tinymovingparts)
  - [Cozmmando](https://github.com/Cozmmando)
+ - [LordCorellon](https://github.com/LordCorellon)
 
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
