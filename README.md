@@ -71,6 +71,13 @@ I would like to Thanks those who contributed so far:
  - [tinymovingparts](https://github.com/tinymovingparts)
  - [Cozmmando](https://github.com/Cozmmando)
  - [LordCorellon](https://github.com/LordCorellon)
+ 
+## Donations
+This Addon is free and will remain free, but if you want to support and
+donate for maintains and possibly new features, this is my Ethereum address for that:
+```
+0xf32c39dCC535616995B8aF7098a4a0fdD79117ae
+```
 
 ## Beware of duplicates & ripoffs
 I've learned that there are people who perfere to copy the plugin under thier name
