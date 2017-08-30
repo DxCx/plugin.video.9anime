@@ -1,3 +1,5 @@
+[B]0.0.18[/B]
+- Remove legacy token decoder
 [B]0.0.17[/B]
 - Enhanced Resolution Sorting Alogirthem
 - Add option for resolution selection as Directory view instead of classic one.
