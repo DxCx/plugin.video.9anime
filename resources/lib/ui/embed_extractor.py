@@ -6,7 +6,6 @@ import http
 import json
 import time
 
-from NineAnimeTokenDecoder import NineAnimeTokenDecoder
 from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
 
