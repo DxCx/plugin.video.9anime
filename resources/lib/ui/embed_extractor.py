@@ -10,24 +10,33 @@ from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
 
 def load_video_from_url(in_url):
+    found_extractor = None
+
+    for extractor in _EMBED_EXTRACTORS.keys():
+        if in_url.startswith(extractor):
+            found_extractor = _EMBED_EXTRACTORS[extractor]
+            break
+
+    if found_extractor is None:
+        print "[*E*] No extractor found for %s" % url
+        return None
+
     try:
+        if found_extractor['preloader'] is not None:
+            print "Modifying Url: %s" % in_url
+            in_url = found_extractor['preloader'](in_url)
+
         print "Probing source: %s" % in_url
         reqObj = http.send_request(in_url)
         page_content = reqObj.text
         url = reqObj.url
+
+        return found_extractor['parser'](url, page_content)
     except http.URLError:
         return None # Dead link, Skip result
     except:
         raise
 
-    for extractor in _EMBED_EXTRACTORS.keys():
-        if in_url.startswith(extractor):
-            try:
-                return _EMBED_EXTRACTORS[extractor](url, page_content)
-            except Exception as e:
-                print "[*E*]: %s" % e
-
-    print "[*E*] No extractor found for %s" % url
     return None
 
 def __set_referer(url):
@@ -76,13 +85,13 @@ def __9anime_extract_direct(refer_url, grabInfo):
 
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
-def __extract_rapidvideo(url, page_content):
-    SETUP_RE = re.compile("\.setup\(([^\)]+)\);")
-    SOURCES_RE = re.compile("\"sources\":\s+(\[[^\]]+\])")
-    setupParams = SETUP_RE.findall(page_content)[0]
-    sources = json.loads(SOURCES_RE.findall(setupParams)[0])
+def __preload_rapidvideo(url):
+    return url + "?q=q"
 
-    return __check_video_list(url, map(lambda x: (x['label'], x['file']), sources))
+def __extract_rapidvideo(url, page_content):
+    SOURCES_RE = re.compile("<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>")
+    sources = SOURCES_RE.findall(page_content)
+    return __check_video_list(url, map(lambda x: (x[1], x[0]), sources))
 
 def __extract_9anime(url, page_content):
     episode_id = url.rsplit('/', 1)[1]
@@ -96,10 +105,9 @@ def __extract_9anime(url, page_content):
     extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0, ts_value)
 
     url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&update=0" % (url_base, ts_value, extra_param, episode_id)
-    set_request = None
 
     time.sleep(0.3)
-    urlRequest = http.send_request(url, set_request=set_request)
+    urlRequest = http.send_request(url)
 
     grabInfo = json.loads(urlRequest.text)
     if 'error' in grabInfo.keys():
@@ -230,12 +238,15 @@ def __extract_openload(url, content):
     video_url = "https://openload.co/stream/" + ''.join(tagNameArr) + "?mime=true"
     return http.head_request(video_url).url
 
-def __register_extractor(urls, function):
+def __register_extractor(urls, function, url_preloader=None):
     if type(urls) is not list:
         urls = [urls]
 
     for url in urls:
-        _EMBED_EXTRACTORS[url] = function
+        _EMBED_EXTRACTORS[url] = {
+            "preloader": url_preloader,
+            "parser": function,
+        }
 
 def __ignore_extractor(url, content):
     return None
@@ -315,7 +326,8 @@ __register_extractor(["https://mycloud.to/embed",
                      __extract_mycloud)
 
 __register_extractor(["https://www.rapidvideo.com/e/"],
-                     __extract_rapidvideo)
+                     __extract_rapidvideo,
+                     __preload_rapidvideo)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
