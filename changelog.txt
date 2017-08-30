@@ -1,3 +1,5 @@
+[B]0.0.19[/B]
+- Bugfix for RapidVideo
 [B]0.0.18[/B]
 - Remove legacy token decoder
 [B]0.0.17[/B]
