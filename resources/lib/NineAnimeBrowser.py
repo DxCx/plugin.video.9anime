@@ -3,7 +3,6 @@ import urllib
 from ui import utils
 from ui import BrowserBase
 from ui import http
-from ui.NineAnimeTokenDecoder import NineAnimeTokenDecoder
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "http://9anime.to"
@@ -79,12 +78,6 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
                                    i[1][::-1])) for i in servers])
         return servers
 
-    def _get_request(self, url, data=None):
-        # Hook Requests with Token.
-        set_request = NineAnimeTokenDecoder.set_request(self._to_url('/token'),
-                                                       http.send_request)
-        return super(NineAnimeBrowser, self)._get_request(url, data, set_request)
-
     def search_site(self, search_string, page=1):
         data = {
             "keyword": search_string,
@@ -147,7 +140,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("genre/%s" % name)
         return self._process_anime_view(url, data, "genre/%s/%%d" % name, page)
 
-    def get_anime_episodes(self, anime_url, returnDirectory):
+    def get_anime_episodes(self, anime_url, returnDirectory=False):
         servers = self._get_anime_info(anime_url)
         mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
         server = servers[mostSources]
