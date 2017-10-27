@@ -68,23 +68,41 @@ def xbmc_add_dir(name, url, iconimage=''):
     ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=True)
     return ok
 
-def play_source(link):
+def _prefetch_play_link(link):
     if callable(link):
         link = link()
 
-    if link:
-        linkInfo = http.head_request(link);
-        if linkInfo.status_code != 200:
-            raise Exception('could not resolve %s. status_code=%d' %
-                            (link, linkInfo.status_code))
+    if not link:
+        return None
 
-        item = xbmcgui.ListItem(path=linkInfo.url)
-        if 'Content-Type' in linkInfo.headers:
-            item.setProperty('mimetype', linkInfo.headers['Content-Type'])
+    test_link = link
+    headers = []
+    if test_link.find('|') != -1:
+        headers = test_link.split('|')
+        test_link = headers.pop(0)
 
-        xbmcplugin.setResolvedUrl(HANDLE, True, item)
-    else:
+    linkInfo = http.head_request(test_link);
+    if linkInfo.status_code != 200:
+        raise Exception('could not resolve %s. status_code=%d' %
+                        (link, linkInfo.status_code))
+
+    resolved_link = "|".join([linkInfo.url] + headers)
+    return {
+        "url": resolved_link,
+        "headers": linkInfo.headers,
+    }
+
+def play_source(link):
+    linkInfo = _prefetch_play_link(link)
+    if not linkInfo:
         xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem())
+        return
+
+    item = xbmcgui.ListItem(path=linkInfo['url'])
+    if 'Content-Type' in linkInfo['headers']:
+        item.setProperty('mimetype', linkInfo['headers']['Content-Type'])
+
+    xbmcplugin.setResolvedUrl(HANDLE, True, item)
 
 def draw_items(video_data):
     for vid in video_data:
