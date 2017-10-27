@@ -188,7 +188,7 @@ def __extract_mycloud(url, content):
     playlist_content = http.send_request(playlist_url, set_request=__set_referer(url)).text
     playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
     playlist_entries_full = map(joinUrls, playlist_entries)
-    return playlist_entries_full
+    return __check_video_list(url, playlist_entries_full)
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
