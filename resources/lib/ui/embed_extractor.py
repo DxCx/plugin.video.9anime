@@ -18,7 +18,7 @@ def load_video_from_url(in_url):
             break
 
     if found_extractor is None:
-        print "[*E*] No extractor found for %s" % url
+        print "[*E*] No extractor found for %s" % in_url
         return None
 
     try:
@@ -57,7 +57,9 @@ def __check_video_list(refer_url, vidlist):
     for item in vidlist:
         try:
             temp_req = http.head_request(item[1], set_request=referer)
-            nlist.append((item[0], temp_req.url))
+            playUrl = "%s|Referer=%s" % (temp_req.url,
+                                         urllib.quote_plus(refer_url))
+            nlist.append((item[0], playUrl))
         except Exception, e:
             # Just don't add source.
             pass
@@ -188,7 +190,7 @@ def __extract_mycloud(url, content):
     playlist_content = http.send_request(playlist_url, set_request=__set_referer(url)).text
     playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
     playlist_entries_full = map(joinUrls, playlist_entries)
-    return playlist_entries_full
+    return __check_video_list(url, playlist_entries_full)
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
@@ -321,7 +323,8 @@ __register_extractor("http://embed.novamov.com/", __extract_swf_player)
 
 __register_extractor("https://openload.co/embed/", __extract_with_urlresolver)
 
-__register_extractor(["https://mycloud.to/embed",
+__register_extractor(["https://mcloud.to/embed",
+                      "https://mycloud.to/embed",
                       "http://mycloud.to/embed"],
                      __extract_mycloud)
 
