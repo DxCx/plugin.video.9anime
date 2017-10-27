@@ -16,5 +16,5 @@
 	<string id="30100">Fetching Sources</string>
 	<string id="30101">Processing %s</string>
 	<string id="30102">Please choose source: </string>
-	<string id="30103">Couldn't find eliable sources</string>
+	<string id="30103">Couldn't find eligible sources</string>
 </strings>
