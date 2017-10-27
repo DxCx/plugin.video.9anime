@@ -11,7 +11,7 @@ class SourcesList(object):
                 'title': 'Fetching Sources',
                 'processing': 'Processing %s',
                 'choose': 'Please choose source: ',
-                'notfound': 'Couldn\'t find eliable sources',
+                'notfound': 'Couldn\'t find eligible sources',
             }
 
         self._autoplay = autoplay
