@@ -1,3 +1,7 @@
+[B]0.0.20[/B]
+- Fixed Typo
+- Add G1/G2 Sources
+- Bugfix for MyCloud source
 [B]0.0.19[/B]
 - Bugfix for RapidVideo
 [B]0.0.18[/B]
