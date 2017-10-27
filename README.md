@@ -71,6 +71,7 @@ I would like to Thanks those who contributed so far:
  - [tinymovingparts](https://github.com/tinymovingparts)
  - [Cozmmando](https://github.com/Cozmmando)
  - [LordCorellon](https://github.com/LordCorellon)
+ - [miasmaejuices](https://github.com/miasmaejuices)
  
 ## Donations
 This Addon is free and will remain free, but if you want to support and
