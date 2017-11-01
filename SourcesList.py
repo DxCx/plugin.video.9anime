@@ -11,11 +11,14 @@ class SourcesList(object):
                 'title': 'Fetching Sources',
                 'processing': 'Processing %s',
                 'choose': 'Please choose source: ',
-                'notfound': 'Couldn\'t find eliable sources',
+                'notfound': 'Couldn\'t find eligible sources',
             }
 
         self._autoplay = autoplay
         self._strings = strings
+        for key in self._strings.keys():
+            self._strings[key] = self._strings[key].decode("utf-8")
+
         self._sources = []
         self._sortResults = sortResults
 
