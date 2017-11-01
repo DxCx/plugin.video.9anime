@@ -16,6 +16,9 @@ class SourcesList(object):
 
         self._autoplay = autoplay
         self._strings = strings
+        for key in self._strings.keys():
+            self._strings[key] = self._strings[key].decode("utf-8")
+
         self._sources = []
         self._sortResults = sortResults
 
