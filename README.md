@@ -12,10 +12,10 @@ Kodi Plugin that let's you watch almost all animes HD and for free.
 
 ## Instructions:
 
-* [Standard Installation (No Updates)](https://github.com/DxCx/plugin.video.9anime/wiki/Standard-Installation)
-* [Manual Installation](https://github.com/DxCx/plugin.video.9anime/wiki/Manual-Installation)
-* [Android TV Box](https://github.com/DxCx/plugin.video.9anime/wiki/Android-TV-Box)
-* [Fire TV Stick Amazon](https://github.com/DxCx/plugin.video.9anime/wiki/Fire-TV-Stick---Amazon)
+* [Standard Installation](https://github.com/DxCx/plugin.video.9anime/wiki/Standard-Installation)
+* [Manual Installation (No Updates)](https://github.com/DxCx/plugin.video.9anime/wiki/Manual-Installation)
+* [Android TV Box](https://github.com/DxCx/plugin.video.9anime/wiki/Install-on-Android-TV-Box)
+* [Fire TV Stick Amazon](https://github.com/DxCx/plugin.video.9anime/wiki/Install-on-Amazon-Fire-TV-Stick)
 
 ## Contributers
 Contributers list can be found [here](https://github.com/DxCx/plugin.video.9anime/wiki/Contributors)
