@@ -20,6 +20,7 @@ MENU_ITEMS = [
 SERVER_CHOICES = {
     "serverg1": "Server G1",
     "serverg2": "Server G2",
+    "serverg3": "Server G3",
     "serverf2": "Server F2",
     "serverf4": "Server F4",
     "serverrapid": "RapidVideo",
