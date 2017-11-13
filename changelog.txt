@@ -1,3 +1,5 @@
+[B]0.0.22[/B]
+- Add G3 Server
 [B]0.0.21[/B]
 - Bugfix: treat string table as utf-8
 [B]0.0.20[/B]
