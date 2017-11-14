@@ -142,12 +142,14 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
     def get_anime_episodes(self, anime_url, returnDirectory=False):
         servers = self._get_anime_info(anime_url)
+        if not servers: return []
         mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
         server = servers[mostSources]
         return map(lambda x: utils.allocate_item(x['name'], x['url'], returnDirectory, ''), server)
 
     def get_episode_sources(self, anime_url, episode):
         servers = self._get_anime_info(anime_url)
+        if not servers: return []
         # server list to server -> source
         sources = map(lambda x: (x[0], filter(lambda y: y['id'] == episode,x[1])), servers.iteritems())
         sources = filter(lambda x: len(x[1]) != 0, sources)
