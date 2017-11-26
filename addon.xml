@@ -1,4 +1,4 @@
-<addon id="plugin.video.9anime" name="9Anime" provider-name="DxCx" version="0.0.23">
+<addon id="plugin.video.9anime" name="9Anime" provider-name="DxCx" version="0.0.24">
   <requires>
     <import addon="xbmc.python" version="2.25.0" />
     <import addon="script.module.requests" version="2.12.4" />
