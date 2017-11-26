@@ -114,7 +114,7 @@ def __extract_9anime(url, page_content):
     urlRequest = http.send_request(url)
 
     grabInfo = json.loads(urlRequest.text)
-    grabInfo = NineAnimeUrlExtender.rot_dict(grabInfo)
+    grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
     if 'error' in grabInfo.keys():
         raise Exception('error while trying to fetch info: %s' %
                         grabInfo['error'])

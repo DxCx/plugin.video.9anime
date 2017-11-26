@@ -3,6 +3,7 @@ from string import ascii_lowercase as lc, ascii_uppercase as uc, maketrans
 
 class NineAnimeUrlExtender:
     _TS_MAP_TABLE = [i for i in uc if ord(i) % 2 != 0] + [i for i in uc if ord(i) % 2 == 0]
+    _CUSB64_MAP_TABLE = [i for i in lc if ord(i) % 2 != 0] + [i for i in lc if ord(i) % 2 == 0]
     _ts_value_regex = re.compile(ur"<body.*data-ts\s*=[\"]([^\"]+?)[\"]")
     _server_value_regex = \
     re.compile(ur"<div\sclass=\"server\srow\"\s.+?data-id=\"(\d+)\".*?>(.+?)\<\/div\>")
@@ -12,28 +13,23 @@ class NineAnimeUrlExtender:
         pass
 
     @classmethod
-    def rot_dict(cls, obj):
+    def decode_info(cls, obj):
         newObj = {}
 
         for key, value in obj.iteritems():
             if type(value) is unicode or type(value) is str:
                 if value.startswith('.'):
-                    newObj[key] = cls.rot_string(value[1:])
+                    newObj[key] = cls._rot_string(value[1:])
+                if value.startswith('-'):
+                    newObj[key] = cls._cusb64_string(value[1:])
                 else:
                     newObj[key] = value
             elif type(value) is dict:
-                newObj[key] = cls.rot_dict(value)
+                newObj[key] = cls.decode_info(value)
             else:
                 newObj[key] = value
 
         return newObj
-
-    @classmethod
-    def rot_string(cls, content):
-        RotBy = 8
-        lookup = maketrans(lc + uc, lc[RotBy:] + lc[:RotBy] + uc[RotBy:] + uc[:RotBy])
-        decoded = str(content).translate(lookup)
-        return decoded
 
     @classmethod
     def get_server_value(cls, content):
@@ -50,6 +46,13 @@ class NineAnimeUrlExtender:
         return cls._decode_ts_value(ts_value)
 
     @classmethod
+    def _rot_string(cls, content):
+        RotBy = 8
+        lookup = maketrans(lc + uc, lc[RotBy:] + lc[:RotBy] + uc[RotBy:] + uc[:RotBy])
+        decoded = str(content).translate(lookup)
+        return decoded
+
+    @classmethod
     def _decode_ts_value(cls, ts):
         decoded = ""
         for c in ts:
@@ -59,6 +62,24 @@ class NineAnimeUrlExtender:
                 continue
             decoded += uc[cls._TS_MAP_TABLE.index(c)]
 
+        missing_padding = len(decoded) % 4
+        if missing_padding:
+            decoded += b'=' * (4 - missing_padding)
+        return decoded.decode("base64")
+
+    @classmethod
+    def _cusb64_string(cls, content):
+        decoded = ""
+        for c in content:
+            replaced = False
+            if c not in cls._CUSB64_MAP_TABLE:
+                decoded += c
+                continue
+            decoded += lc[cls._CUSB64_MAP_TABLE.index(c)]
+
+        missing_padding = len(decoded) % 4
+        if missing_padding:
+            decoded += b'=' * (4 - missing_padding)
         return decoded.decode("base64")
 
     @classmethod
