@@ -1,3 +1,7 @@
+[B]0.0.23[/B]
+- Fix for the new TS Encoding
+- Fix for the new Param encoding
+- Prevent crash if _get_anime_info returns empty list
 [B]0.0.22[/B]
 - Add G3 Server
 [B]0.0.21[/B]
