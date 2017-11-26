@@ -104,14 +104,17 @@ def __extract_9anime(url, page_content):
     url_base = "%s://%s" % (scheme, domain)
 
     ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
-    extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0, ts_value)
-
-    url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&update=0" % (url_base, ts_value, extra_param, episode_id)
+    server_id = NineAnimeUrlExtender.get_server_value(page_content)
+    extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0,
+                                                               server_id, ts_value)
+    url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
+    (url_base, ts_value, extra_param, episode_id, server_id)
 
     time.sleep(0.3)
     urlRequest = http.send_request(url)
 
     grabInfo = json.loads(urlRequest.text)
+    grabInfo = NineAnimeUrlExtender.rot_dict(grabInfo)
     if 'error' in grabInfo.keys():
         raise Exception('error while trying to fetch info: %s' %
                         grabInfo['error'])
