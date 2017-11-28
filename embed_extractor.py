@@ -28,10 +28,7 @@ def load_video_from_url(in_url):
 
         print "Probing source: %s" % in_url
         reqObj = http.send_request(in_url)
-        page_content = reqObj.text
-        url = reqObj.url
-
-        return found_extractor['parser'](url, page_content)
+        return found_extractor['parser'](http.raw_url(reqObj.url), reqObj.text)
     except http.URLError:
         return None # Dead link, Skip result
     except:
@@ -39,27 +36,32 @@ def load_video_from_url(in_url):
 
     return None
 
-def __set_referer(url):
-    def f(req):
-        req.add_header('Referer', url)
-        return req
-    return f
-
 def __set_flash(url):
     def f(req):
         req.add_header('X-Requested-With', 'ShockwaveFlash/19.0.0.226')
-        return __set_referer(url)(req)
+        return req
     return f
 
-def __check_video_list(refer_url, vidlist):
-    referer = __set_referer(refer_url)
+def __check_video_list(refer_url, vidlist, add_referer=False,
+                       ignore_cookie=False):
     nlist = []
     for item in vidlist:
         try:
-            temp_req = http.head_request(item[1], set_request=referer)
-            playUrl = "%s|Referer=%s" % (temp_req.url,
-                                         urllib.quote_plus(refer_url))
-            nlist.append((item[0], playUrl))
+            item_url = item[1]
+            if add_referer:
+                item_url = http.add_referer_url(item_url, refer_url)
+
+            temp_req = http.head_request(item_url)
+            if temp_req.status_code != 200:
+                print "[*] Skiping Invalid Url: %s - status = %d" % (item[1],
+                                                             temp_req.status_code)
+                continue # Skip Item.
+
+            out_url = temp_req.url
+            if ignore_cookie:
+                out_url = http.strip_cookie_url(out_url)
+
+            nlist.append((item[0], out_url))
         except Exception, e:
             # Just don't add source.
             pass
@@ -71,8 +73,7 @@ def __9anime_extract_direct(refer_url, grabInfo):
     url_parameter_concat = "&" if "?" in grabInfo['grabber'] else "?"
     url = "%s%s%s" % (grabInfo['grabber'], url_parameter_concat, urllib.urlencode(grabInfo['params']))
     url = __relative_url(refer_url, url)
-    resp = json.loads(http.send_request(url,
-                                        set_request=__set_referer(refer_url)).text)
+    resp = json.loads(http.send_request(http.add_referer_url(url, refer_url)).text)
 
     possible_error = resp['error'] if 'error' in resp.keys() else 'No-Error-Set'
     if 'data' not in resp.keys():
@@ -107,11 +108,12 @@ def __extract_9anime(url, page_content):
     server_id = NineAnimeUrlExtender.get_server_value(page_content)
     extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0,
                                                                server_id, ts_value)
-    url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
+
+    ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
     (url_base, ts_value, extra_param, episode_id, server_id)
 
     time.sleep(0.3)
-    urlRequest = http.send_request(url)
+    urlRequest = http.send_request(ep_info_url)
 
     grabInfo = json.loads(urlRequest.text)
     grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
@@ -168,7 +170,7 @@ def __extract_swf_player(url, content):
     }
     token_url = "%s/api/player.api.php?%s" % (domain, urllib.urlencode(data))
 
-    video_info_res = http.send_request(token_url, set_request=__set_flash(url))
+    video_info_res = http.send_request(http.add_referer_url(token_url, url), set_request=__set_flash(url))
     video_info = dict(urlparse.parse_qsl(video_info_res.text))
 
     if video_info.has_key("error_msg"):
@@ -190,10 +192,10 @@ def __extract_mycloud(url, content):
         playlist_url = "https://" + playlist_url
 
     joinUrls = lambda x: (x[0], urlparse.urljoin(playlist_url, x[1]).rstrip())
-    playlist_content = http.send_request(playlist_url, set_request=__set_referer(url)).text
+    playlist_content = http.send_request(http.add_referer_url(playlist_url, url)).text
     playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
     playlist_entries_full = map(joinUrls, playlist_entries)
-    return __check_video_list(url, playlist_entries_full)
+    return __check_video_list(url, playlist_entries_full, True, True)
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
@@ -281,7 +283,7 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
             regex_url = compiled_regex.findall(content)[match]
             regex_url = __relative_url(url, regex_url)
             if double_ref:
-                video_url = utils.head_request(regex_url, __set_referer(url)).url
+                video_url = utils.head_request(http.add_referer_url(regex_url, url)).url
             else:
                 video_url = __relative_url(regex_url, regex_url)
             return video_url
