@@ -1,3 +1,6 @@
+[B]0.0.25[/B]
+- Fixes F2 Source
+- Change base domain to 9anime.is
 [B]0.0.24[/B]
 - Another fix for grabber
 [B]0.0.23[/B]
