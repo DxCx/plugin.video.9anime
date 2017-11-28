@@ -75,20 +75,12 @@ def _prefetch_play_link(link):
     if not link:
         return None
 
-    test_link = link
-    headers = []
-    if test_link.find('|') != -1:
-        headers = test_link.split('|')
-        test_link = headers.pop(0)
-
-    linkInfo = http.head_request(test_link);
+    linkInfo = http.head_request(link);
     if linkInfo.status_code != 200:
         raise Exception('could not resolve %s. status_code=%d' %
                         (link, linkInfo.status_code))
-
-    resolved_link = "|".join([linkInfo.url] + headers)
     return {
-        "url": resolved_link,
+        "url": linkInfo.url,
         "headers": linkInfo.headers,
     }
 
