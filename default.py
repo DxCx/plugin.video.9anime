@@ -19,8 +19,6 @@ MENU_ITEMS = [
 ]
 SERVER_CHOICES = {
     "serverg4": "Server G4",
-    "serverf2": "Server F2",
-    "serverf4": "Server F4",
     "serverrapid": "RapidVideo",
     "servermycloud": "MyCloud",
     "serveropenload": "OpenLoad",
