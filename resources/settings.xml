@@ -5,9 +5,7 @@
 		<setting id="displaystyle" type="labelenum" label="Display episodes as" values="Directory|List" default="List"/>
 	</category>
 	<category label="Servers">
-		<setting id="serverg1" type="bool" label="Use G1" default="true"/>
-		<setting id="serverg2" type="bool" label="Use G2" default="true"/>
-		<setting id="serverg3" type="bool" label="Use G3" default="true"/>
+		<setting id="serverg4" type="bool" label="Use G4" default="true"/>
 		<setting id="serverf2" type="bool" label="Use F2" default="true"/>
 		<setting id="serverf4" type="bool" label="Use F4" default="true"/>
 		<setting id="serverrapid" type="bool" label="Use RapidVideo" default="true"/>

@@ -18,9 +18,7 @@ MENU_ITEMS = [
     (control.lang(30008), "settings")
 ]
 SERVER_CHOICES = {
-    "serverg1": "Server G1",
-    "serverg2": "Server G2",
-    "serverg3": "Server G3",
+    "serverg4": "Server G4",
     "serverf2": "Server F2",
     "serverf4": "Server F4",
     "serverrapid": "RapidVideo",
