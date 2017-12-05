@@ -6,8 +6,6 @@
 	</category>
 	<category label="Servers">
 		<setting id="serverg4" type="bool" label="Use G4" default="true"/>
-		<setting id="serverf2" type="bool" label="Use F2" default="true"/>
-		<setting id="serverf4" type="bool" label="Use F4" default="true"/>
 		<setting id="serverrapid" type="bool" label="Use RapidVideo" default="true"/>
 		<setting id="servermycloud" type="bool" label="Use MyCloud" default="true"/>
 		<setting id="serveropenload" type="bool" label="Use OpenLoad" default="true"/>
