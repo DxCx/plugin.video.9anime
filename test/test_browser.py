@@ -39,9 +39,9 @@ class TestBrowser(unittest.TestCase):
         search_res = self.browser.search_site("Naruto Shippuden")
         self.assertGreater(len(search_res), 0)
 
-        search_item = filter(lambda x: x['name'] == 'Naruto: Shippuuden (Dub)', search_res)
+        search_item = filter(lambda x: x['name'] == u'Naruto: Shippuden (Dub)', search_res)
         self.assertEquals(len(search_item), 1)
-        self.assertEquals(search_item[0]['url'], 'animes/naruto-shippuuden-dub.00zr')
+        self.assertEquals(search_item[0]['url'], u'animes/naruto-shippuden-dub.00zr')
         self.assertEquals(search_item[0]['is_dir'], True)
         self._sleep()
 

@@ -7,15 +7,15 @@ from ui import http
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "http://9anime.is"
     _ANIME_VIEW_ITEMS_RE = \
-    re.compile("<div\sclass=\"item\">\s<a\shref=\".+?/watch/(.+?)\"\sclass=\"poster\"[^>]*?>\s<img\ssrc=\".+?url=([^\"]+?)\"\salt=\"(.+?)\">.*?</div>", re.DOTALL)
+    re.compile("<div\sclass=\"item\">\s<div\sclass=\"inner\">\s<a\shref=\".+?/watch/(.+?)\"\s[^>]+?>\s<img\ssrc=\".+?;url=([^\"]+?)\"\salt=\"([^\"]+?)\"[^>]*?>.+?<\/div>\s<\/div>", re.DOTALL)
     _PAGES_RE = \
-    re.compile("<div\sclass=\"paging\">\s(.+?)\s</div>", re.DOTALL)
+    re.compile("<div\sclass=\"paging-wrapper\">\s(.+?)\s</div>", re.DOTALL)
     _PAGES_TOTAL_RE = \
     re.compile("<span\sclass=\"total\">(\d+)<\/span>", re.DOTALL)
     _GENRES_BOX_RE = \
     re.compile("<a>Genre</a>\s<ul\sclass=\"sub\">(.+?)</ul>", re.DOTALL)
     _GENRE_LIST_RE = \
-    re.compile("<li><a\shref=\"/genre\/(.+?)\"\stitle=\"(.+?)\">",
+    re.compile("<li>\s<a\shref=\"/genre\/(.+?)\"\stitle=\"(.+?)\">",
                re.DOTALL)
     _EPISODES_RE = \
     re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
