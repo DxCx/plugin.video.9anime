@@ -6,8 +6,9 @@ class NineAnimeUrlExtender:
     _CUSB64_MAP_TABLE = [i for i in lc if ord(i) % 2 != 0] + [i for i in lc if ord(i) % 2 == 0]
     _ts_value_regex = re.compile(ur"<body.*data-ts\s*=[\"]([^\"]+?)[\"]")
     _server_value_regex = \
-    re.compile(ur"<div\sclass=\"server\srow\"\s.+?data-id=\"(\d+)\".*?>(.+?)\<\/div\>")
-    _active_ep_regex = re.compile(ur"\<a\sclass=\"active\".+?")
+    re.compile(ur"\<div\sclass=\"widget-title\"\>\s(.+?)\s\<\/div\>")
+    _active_server_regex = \
+    re.compile(ur"\<span\sclass=\"tab active\"\sdata-name=\"(\d+)\".+?")
 
     def __init__(self):
         pass
@@ -33,12 +34,11 @@ class NineAnimeUrlExtender:
 
     @classmethod
     def get_server_value(cls, content):
-        server_values = cls._server_value_regex.findall(content)
-        for (server_id, episodes) in server_values:
-            if len(cls._active_ep_regex.findall(episodes)):
-                return int(server_id, 10)
-
-        raise Exception("Cant extract server id")
+        servers = cls._server_value_regex.findall(content)[0]
+        active_server = cls._active_server_regex.findall(servers)
+        if len(active_server) != 1:
+            raise Exception("Cant extract server id")
+        return int(active_server[0], 10)
 
     @classmethod
     def get_ts_value(cls, content):
