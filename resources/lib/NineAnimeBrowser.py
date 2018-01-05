@@ -20,8 +20,17 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _EPISODES_RE = \
     re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
                re.DOTALL)
+    _EPISODE_PANEL_RE = \
+    re.compile("\<div\sclass=\"widget\sservers\"[^>]+?\>(.+?\s\<\/div\>\s\<\/div\>)\s\<\/div\>",
+               re.DOTALL)
+    _EPISODE_PANEL_POST_RE = \
+    re.compile("\<div\sclass=\"widget-title\"\>\s(.+?)\s\<\/div\>\s\<div\sclass=\"widget-body\"\>\s(.+?\s\<\/div\>)\s\<\/div\>",
+               re.DOTALL)
+    _SERVER_NAMES_RE = \
+    re.compile("\<span\sclass=\"tab\s\w*\"\sdata-name=\"(\d+)\">([^<]+?)</span>",
+               re.DOTALL)
     _EPISODE_BOXES_RE = \
-    re.compile("<i\sclass=\"fa\sfa-server\"></i>\s(.+?)\s</label>\s<div.+?>(.+?)</div>",
+    re.compile("\<div\sclass=\"server\s\w+\"\sdata-name=\"(\d+)\"[^>]+?>(.+?)</ul>\s</div>",
                re.DOTALL)
 
     _EPISODE_LINK_RE = re.compile("<li><div><a\shref=\"/([-\w\s\d]+?)/(\d+?)\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong></a><i\sclass=\"anititle\">(.+?)</i>", re.DOTALL)
@@ -72,8 +81,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     def _get_anime_info(self, anime_url):
         resp = self._get_request(self._to_url("/watch/%s" % anime_url))
         # Strip the server into boxes
-        episodes_boxes = self._EPISODE_BOXES_RE.findall(resp)
-        servers = [(i[0], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
+        episodes_panel = self._EPISODE_PANEL_RE.findall(resp)[0]
+        servers_text, epi_text = self._EPISODE_PANEL_POST_RE.findall(episodes_panel)[0]
+        snames = dict(self._SERVER_NAMES_RE.findall(servers_text))
+
+        episodes_boxes = self._EPISODE_BOXES_RE.findall(epi_text)
+        servers = [(snames[i[0]], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
         servers = dict([(i[0], map(self._format_episode(anime_url),
                                    i[1][::-1])) for i in servers])
         return servers
