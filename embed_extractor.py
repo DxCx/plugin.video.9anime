@@ -104,19 +104,20 @@ def __extract_9anime(url, page_content):
 
     url_base = "%s://%s" % (scheme, domain)
 
-    ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
-    server_id = NineAnimeUrlExtender.get_server_value(page_content)
-    extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0,
-                                                               server_id, ts_value)
+    # Old Code:
+    # ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
+    #extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0,
+    #                                                           server_id, ts_value)
+    # ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
+    # grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
 
-    ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
-    (url_base, ts_value, extra_param, episode_id, server_id)
+    server_id = NineAnimeUrlExtender.get_server_value(page_content)
+    ep_info_url = "%s/ajax/episode/info?id=%s&server=%d" % \
+    (url_base, episode_id, server_id)
 
     time.sleep(0.3)
     urlRequest = http.send_request(ep_info_url)
-
     grabInfo = json.loads(urlRequest.text)
-    grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
     if 'error' in grabInfo.keys():
         raise Exception('error while trying to fetch info: %s' %
                         grabInfo['error'])
@@ -187,14 +188,14 @@ def __extract_with_urlresolver(url, content):
     return lambda: urlresolver.resolve(url)
 
 def __extract_mycloud(url, content):
-    playlist_url = re.findall("\"file\"\s*:\s*\"\/*(.+)\"", content)[0]
-    if not playlist_url.startswith("http"):
-        playlist_url = "https://" + playlist_url
+    strip_res = lambda x: x.split("/")[-1].split(".")[0]
+    formatUrls = lambda x: (strip_res(x), http.add_referer_url(x, url))
+    fixHttp = lambda x: ("https://" + x) if not x.startswith("http") else x
 
-    joinUrls = lambda x: (x[0], urlparse.urljoin(playlist_url, x[1]).rstrip())
-    playlist_content = http.send_request(http.add_referer_url(playlist_url, url)).text
-    playlist_entries = re.findall("=\d*x(\d*)\n*([^#]*)\n*#?", playlist_content)
-    playlist_entries_full = map(joinUrls, playlist_entries)
+    playlist_urls = re.findall("\"file\"\s*:\s*\"\/*(.+)\"", content)
+    playlist_urls = map(fixHttp, playlist_urls)
+    playlist_entries_full = map(formatUrls, playlist_urls)
+
     return __check_video_list(url, playlist_entries_full, True, True)
 
 # Thanks to https://github.com/munix/codingground
