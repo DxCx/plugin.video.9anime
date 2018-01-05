@@ -1,3 +1,5 @@
+[B]0.0.27[/B]
+- Fixes for new website design
 [B]0.0.26[/B]
 - Align servers with website
 [B]0.0.25[/B]
