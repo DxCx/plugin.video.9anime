@@ -103,7 +103,7 @@ def POPDUBBED_PAGES(payload):
 
 @route('search')
 def SEARCH(payload):
-    query = control.keyboard(control.lang(30002))
+    query = control.keyboard(control.lang(30007))
     if query:
         return control.draw_items(_BROWSER.search_site(query))
     return False
