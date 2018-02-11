@@ -1,3 +1,7 @@
+[B]0.0.28[/B]
+- Hotfix for 9Anime Grabber
+- Fix MyCloud source listing
+- Fix for title above keyboard (Thanks SwagOtaku)
 [B]0.0.27[/B]
 - Fixes for new website design
 [B]0.0.26[/B]
