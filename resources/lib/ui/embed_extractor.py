@@ -104,16 +104,11 @@ def __extract_9anime(url, page_content):
 
     url_base = "%s://%s" % (scheme, domain)
 
-    # Old Code:
-    # ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
-    #extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, 0,
-    #                                                           server_id, ts_value)
-    # ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d&update=0" % \
-    # grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
-
+    ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
     server_id = NineAnimeUrlExtender.get_server_value(page_content)
-    ep_info_url = "%s/ajax/episode/info?id=%s&server=%d" % \
-    (url_base, episode_id, server_id)
+    extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, server_id, ts_value)
+    ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d" % \
+    (url_base, ts_value, extra_param, episode_id, server_id)
 
     time.sleep(0.3)
     urlRequest = http.send_request(ep_info_url)
@@ -188,15 +183,25 @@ def __extract_with_urlresolver(url, content):
     return lambda: urlresolver.resolve(url)
 
 def __extract_mycloud(url, content):
+    fixHttp = lambda x: ("https://" + x) if not x.startswith("http") else x
     strip_res = lambda x: x.split("/")[-1].split(".")[0]
     formatUrls = lambda x: (strip_res(x), http.add_referer_url(x, url))
-    fixHttp = lambda x: ("https://" + x) if not x.startswith("http") else x
 
-    playlist_urls = re.findall("\"file\"\s*:\s*\"\/*(.+)\"", content)
-    playlist_urls = map(fixHttp, playlist_urls)
-    playlist_entries_full = map(formatUrls, playlist_urls)
+    # Get m3u of all res
+    m3u_list = re.findall("\"file\"\s*:\s*\"\/*(.+)\"", content)
+    m3u_list = map(fixHttp, m3u_list)
+    m3u_list = m3u_list[0]
 
-    return __check_video_list(url, playlist_entries_full, True, True)
+    # Read and parse all res
+    playlist_content = http.send_request(http.add_referer_url(m3u_list, url)).text
+    playlist_content = map(lambda x: x.strip(), playlist_content.split("\n"))
+    playlist_content = filter(lambda x: not x.startswith("#") and len(x), playlist_content)
+
+    # Build source urls
+    sources = map(lambda x: __relative_url(m3u_list, x), playlist_content)
+    sources = map(formatUrls, sources)
+
+    return __check_video_list(url, sources, True, True)
 
 # Thanks to https://github.com/munix/codingground
 def __extract_openload(url, content):
@@ -265,10 +270,8 @@ def __relative_url(original_url, new_url):
 
     if new_url.startswith("//"):
         return "http:%s" % new_url
-    elif new_url.startswith("/"):
-        return urlparse.urljoin(original_url, new_url)
     else:
-        raise Exception("Cannot resolve %s" % new_url)
+        return urlparse.urljoin(original_url, new_url)
 
 def __extractor_factory(regex, double_ref=False, match=0, debug=False):
     compiled_regex = re.compile(regex, re.DOTALL)
