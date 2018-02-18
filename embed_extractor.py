@@ -28,7 +28,9 @@ def load_video_from_url(in_url):
 
         print "Probing source: %s" % in_url
         reqObj = http.send_request(in_url)
-        return found_extractor['parser'](http.raw_url(reqObj.url), reqObj.text)
+        return found_extractor['parser'](http.raw_url(reqObj.url),
+                                         reqObj.text,
+                                         http.get_referer(in_url))
     except http.URLError:
         return None # Dead link, Skip result
     except:
@@ -88,15 +90,25 @@ def __9anime_extract_direct(refer_url, grabInfo):
 
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
-def __preload_rapidvideo(url):
-    return url + "?q=q"
+def __final_resolve_rapidvideo(url, label, referer=None):
+    VIDEO_RE = re.compile("\<source\ssrc=\"([^\"]+?)\"")
+    def playSource():
+        playUrl = http.add_referer_url("%s&q=%s" % (url, label), referer)
+        reqObj = http.send_request(playUrl)
+        return VIDEO_RE.findall(reqObj.text)[0]
 
-def __extract_rapidvideo(url, page_content):
-    SOURCES_RE = re.compile("<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>")
-    sources = SOURCES_RE.findall(page_content)
-    return __check_video_list(url, map(lambda x: (x[1], x[0]), sources))
+    return playSource
 
-def __extract_9anime(url, page_content):
+def __extract_rapidvideo(url, page_content, referer=None):
+    SOURCES_RE = re.compile("\<a\shref=\".+q=(.+?)\"\>")
+    source_labels = SOURCES_RE.findall(page_content)
+    sources = [
+        (label, __final_resolve_rapidvideo(url, label, referer))
+        for label in source_labels]
+
+    return sources
+
+def __extract_9anime(url, page_content, referer=None):
     episode_id = url.rsplit('/', 1)[1]
     url_info = urlparse.urlparse(url)
     domain = url_info.netloc
@@ -122,13 +134,13 @@ def __extract_9anime(url, page_content):
         if target.startswith('//'):
             target = "%s:%s" % (url_info.scheme, target)
 
-        return load_video_from_url(target)
+        return load_video_from_url(http.add_referer_url(target, url))
     elif grabInfo['type'] == 'direct':
         return __9anime_extract_direct(url, grabInfo)
 
     raise Exception('Unknown case, please report')
 
-def __animeram_factory(in_url, page_content):
+def __animeram_factory(in_url, page_content, referer=None):
     IFRAME_RE = re.compile("<iframe.+?src=\"(.+?)\"")
     embeded_url = IFRAME_RE.findall(page_content)[0]
     embeded_url = __relative_url(in_url, embeded_url)
@@ -146,7 +158,7 @@ def __extract_js_var(content, name):
         return "undefined"
     return __extract_js_var(content, deref[0])
 
-def __extract_swf_player(url, content):
+def __extract_swf_player(url, content, referer=None):
     domain = __extract_js_var(content, "flashvars\.domain")
     assert domain is not "undefined"
 
@@ -176,14 +188,14 @@ def __extract_swf_player(url, content):
         return None
     return video_info['url']
 
-def __extract_with_urlresolver(url, content):
+def __extract_with_urlresolver(url, content, referer=None):
     # NOTE: Requires urlresolver dependancy (script.module.urlresolver) in
     # addon.xml
 
     import urlresolver
     return lambda: urlresolver.resolve(url)
 
-def __extract_mycloud(url, content):
+def __extract_mycloud(url, content, referer=None):
     fixHttp = lambda x: ("https://" + x) if not x.startswith("http") else x
     strip_res = lambda x: x.split("/")[-1].split(".")[0]
     formatUrls = lambda x: (strip_res(x), http.add_referer_url(x, url))
@@ -262,7 +274,7 @@ def __register_extractor(urls, function, url_preloader=None):
             "parser": function,
         }
 
-def __ignore_extractor(url, content):
+def __ignore_extractor(url, content, referer=None):
     return None
 
 def __relative_url(original_url, new_url):
@@ -277,7 +289,7 @@ def __relative_url(original_url, new_url):
 def __extractor_factory(regex, double_ref=False, match=0, debug=False):
     compiled_regex = re.compile(regex, re.DOTALL)
 
-    def f(url, content):
+    def f(url, content, referer=None):
         if debug:
             print url
             print content
@@ -339,8 +351,7 @@ __register_extractor(["https://mcloud.to/embed",
                      __extract_mycloud)
 
 __register_extractor(["https://www.rapidvideo.com/e/"],
-                     __extract_rapidvideo,
-                     __preload_rapidvideo)
+                     __extract_rapidvideo)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
