@@ -48,6 +48,12 @@ def Session():
 def raw_url(url):
     return _strip_url(url)[0]
 
+def get_referer(url):
+    url, headers = _strip_url(url)
+    if _REFERER_HEADER in headers:
+        return headers[_REFERER_HEADER]
+    return None
+
 def send_request(url, data=None, set_request=None, head=False):
     session = Session()
     target_url, headers = _strip_url(url)
