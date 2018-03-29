@@ -146,7 +146,7 @@ def PLAY(payload):
         if s._read_sources():
             items = sorted(s._sources.iteritems(), key=lambda x: x[0])
             items = [(title[5:], url) for title, url in items]
-            items = map(lambda x: utils.allocate_item(x[0], 'playlink&url=/'+x[1], False, ''), items)
+            items = map(lambda x: utils.allocate_item(x[0], 'playlink&url=/'+x[1],'', False, ''), items)
             return control.draw_items(items)
     else:
         return control.play_source(s.get_video_link())
@@ -157,7 +157,7 @@ def PLAY_SOURCE(payload):
 
 @route('')
 def LIST_MENU(payload):
-    return control.draw_items([utils.allocate_item(name, url, True) for name, url in MENU_ITEMS])
+    return control.draw_items([utils.allocate_item(name, url,'', True) for name, url in MENU_ITEMS])
 
 router_process(control.get_plugin_url())
 

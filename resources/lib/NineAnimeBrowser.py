@@ -20,6 +20,10 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _EPISODES_RE = \
     re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
                re.DOTALL)
+    _PLOT_RE = \
+    re.compile('<div class="desc">(.+?)</div>', re.DOTALL)
+    _EPISODE_IMAGE_RE = \
+    re.compile('<div class="thumb col-md-5 hidden-sm hidden-xs"> <img src="(.+?)\"', re.DOTALL)    
     _EPISODE_PANEL_RE = \
     re.compile("\<div\sclass=\"widget\sservers\"[^>]+?\>(.+?\s\<\/div\>\s\<\/div\>)\s\<\/div\>",
                re.DOTALL)
@@ -45,7 +49,8 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         name = res[2]
         image = res[1]
         url = res[0]
-        return utils.allocate_item(name, "animes/" + url, True, image)
+        plot = ' '
+        return utils.allocate_item(name, "animes/" + url, plot, True, image)
 
     def _handle_paging(self, results, base_url, page):
         pages_html = self._PAGES_RE.findall(results)
@@ -59,7 +64,14 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
         next_page = page + 1
         name = "Next Page (%d/%d)" % (next_page, total_pages)
-        return [utils.allocate_item(name, base_url % next_page, True, None)]
+        return [utils.allocate_item(name, base_url % next_page,'', True, None)]
+
+    def _extract_anime_plot(self, url):
+        url = res[0]
+        result = self._get_request('https://9anime.is/watch/'+url)
+        match = self._PLOT_RE.findall(result)
+        plot = ''.join(match)
+        return plot
 
     def _process_anime_view(self, url, data, base_plugin_url, page):
         results = self._get_request(url, data)
@@ -144,7 +156,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         genres_box = self._GENRES_BOX_RE.findall(res)[0]
         generes = self._GENRE_LIST_RE.findall(genres_box)
         generes_out = [(i[1], "genre/%s/1" % i[0]) for i in generes]
-        return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes_out)
+        return map(lambda x: utils.allocate_item(x[0], x[1],'', True, ''), generes_out)
 
     def get_genre(self, name, page=1):
         data = {
@@ -158,7 +170,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         if not servers: return []
         mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
         server = servers[mostSources]
-        return map(lambda x: utils.allocate_item(x['name'], x['url'], returnDirectory, ''), server)
+        resp = self._get_request(self._to_url("/watch/%s" % anime_url))
+        replot = self._PLOT_RE.findall(resp)
+        reimage = self._EPISODE_IMAGE_RE.findall(resp)
+        plot = ''.join(replot)
+        image = ''.join(reimage)
+        return map(lambda x: utils.allocate_item(x['name'], x['url'], plot, returnDirectory, image), server)
 
     def get_episode_sources(self, anime_url, episode):
         servers = self._get_anime_info(anime_url)
