@@ -1,3 +1,5 @@
+[B]0.0.30[/B]
+- Bugfix for titles by SwagOtako
 [B]0.0.29[/B]
 - Fixed RapidVideo and MyCloud players
 [B]0.0.28[/B]
