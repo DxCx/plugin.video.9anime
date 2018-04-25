@@ -4,7 +4,7 @@ git checkout master
 git remote update origin
 git reset --hard origin/master
 
-NEW_VERSION=`python updateVersion.py`
+NEW_VERSION=`python2 updateVersion.py`
 BRANCH_NAME=version-${NEW_VERSION}
 
 git checkout -b ${BRANCH_NAME}
