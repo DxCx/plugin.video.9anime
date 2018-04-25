@@ -1,3 +1,5 @@
+[B][/B]
+- 
 [B]0.0.29[/B]
 - Fixed RapidVideo and MyCloud players
 [B]0.0.28[/B]
