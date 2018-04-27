@@ -1,3 +1,5 @@
+[B]0.0.33[/B]
+- add support for resolution in Streamango
 [B]0.0.32[/B]
 - Replaces old G4 source with new Streamango
 [B]0.0.31[/B]
