@@ -47,11 +47,11 @@ def keyboard(text):
         return keyboard.getText()
     return None
 
-def xbmc_add_player_item(name, url, iconimage=''):
+def xbmc_add_player_item(name, url, iconimage='', description=''):
     ok=True
     u=addon_url(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    liz.setInfo('video', infoLabels={ "Title": name })
+    liz.setInfo('video', infoLabels={ "Title": name, "Plot": description })
     liz.setProperty("fanart_image", __settings__.getAddonInfo('path') + "/fanart.jpg")
     liz.setProperty("Video", "true")
     liz.setProperty("IsPlayable", "true")
@@ -59,11 +59,11 @@ def xbmc_add_player_item(name, url, iconimage=''):
     ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz, isFolder=False)
     return ok
 
-def xbmc_add_dir(name, url, iconimage=''):
+def xbmc_add_dir(name, url, iconimage='', description=''):
     ok=True
     u=addon_url(url)
     liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-    liz.setInfo('video', infoLabels={ "Title": name })
+    liz.setInfo('video', infoLabels={ "Title": name, "Plot": description })
     liz.setProperty("fanart_image", iconimage)
     ok=xbmcplugin.addDirectoryItem(handle=HANDLE,url=u,listitem=liz,isFolder=True)
     return ok
@@ -99,8 +99,8 @@ def play_source(link):
 def draw_items(video_data):
     for vid in video_data:
         if vid['is_dir']:
-            xbmc_add_dir(vid['name'], vid['url'], vid['image'])
+            xbmc_add_dir(vid['name'], vid['url'], vid['image'], vid['plot'])
         else:
-            xbmc_add_player_item(vid['name'], vid['url'], vid['image'])
+            xbmc_add_player_item(vid['name'], vid['url'], vid['image'], vid['plot'])
     xbmcplugin.endOfDirectory(HANDLE, succeeded=True, updateListing=False, cacheToDisc=True)
     return True

@@ -4,12 +4,13 @@ import re
 
 _numbers_in_parentheses_regex = re.compile(ur'(\d+)\D*')
 
-def allocate_item(name, url, is_dir=False, image=''):
+def allocate_item(name, url, is_dir=False, image='', plot=''):
     new_res = {}
     new_res['is_dir'] = is_dir
     new_res['image'] = image
     new_res['name'] = name
     new_res['url'] = url
+    new_res['plot'] = plot
     return new_res
 
 def parse_resolution_of_source(data):
