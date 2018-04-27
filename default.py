@@ -18,7 +18,7 @@ MENU_ITEMS = [
     (control.lang(30008), "settings")
 ]
 SERVER_CHOICES = {
-    "serverg4": "Server G4",
+    "serverstreamango": "Streamango",
     "serverrapid": "RapidVideo",
     "servermycloud": "MyCloud",
     "serveropenload": "OpenLoad",
