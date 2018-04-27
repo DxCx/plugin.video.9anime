@@ -23,7 +23,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _PLOT_RE = \
     re.compile('<div class="desc">(.+?)</div>', re.DOTALL)
     _EPISODE_IMAGE_RE = \
-    re.compile('<div class="thumb col-md-5 hidden-sm hidden-xs"> <img src="(.+?)\"', re.DOTALL)    
+    re.compile('<div class="thumb col-md-5 hidden-sm hidden-xs"> <img src="(.+?)\"', re.DOTALL)
     _EPISODE_PANEL_RE = \
     re.compile("\<div\sclass=\"widget\sservers\"[^>]+?\>(.+?\s\<\/div\>\s\<\/div\>)\s\<\/div\>",
                re.DOTALL)
@@ -49,8 +49,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         name = res[2]
         image = res[1]
         url = res[0]
-        plot = ' '
-        return utils.allocate_item(name, "animes/" + url, plot, True, image)
+        return utils.allocate_item(name, "animes/" + url, True, image)
 
     def _handle_paging(self, results, base_url, page):
         pages_html = self._PAGES_RE.findall(results)
@@ -64,14 +63,20 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
         next_page = page + 1
         name = "Next Page (%d/%d)" % (next_page, total_pages)
-        return [utils.allocate_item(name, base_url % next_page,'', True, None)]
+        return [utils.allocate_item(name, base_url % next_page, True, None)]
 
-    def _extract_anime_plot(self, url):
-        url = res[0]
-        result = self._get_request('https://9anime.is/watch/'+url)
-        match = self._PLOT_RE.findall(result)
-        plot = ''.join(match)
-        return plot
+    def _get_anime_plot(self, url):
+        resp = self._get_request(self._to_url("/watch/%s" % url))
+        return self._extract_anime_extra(resp)['plot']
+
+    def _extract_anime_extra(self, resp):
+        replot = self._PLOT_RE.findall(resp)
+        reimage = self._EPISODE_IMAGE_RE.findall(resp)
+        plot = ''.join(replot)
+        return {
+            "plot": plot,
+            "image": reimage[0],
+        }
 
     def _process_anime_view(self, url, data, base_plugin_url, page):
         results = self._get_request(url, data)
@@ -80,18 +85,24 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         all_results += self._handle_paging(results, base_plugin_url, page)
         return all_results
 
-    def _format_episode(self, anime_url):
+    def _format_episode(self, anime_url, extra):
         def f(einfo):
-            return {
+            base = {}
+            base.update(extra)
+            base.update({
                 "id": int(einfo[1]),
                 "url": "play/" + anime_url + "/" + einfo[1],
                 "source": self._to_url("watch/%s/%s" % (anime_url, einfo[0])),
                 "name": "Episode %s (%s)" % (einfo[1], einfo[2])
-            }
+            })
+            return base
+
         return f
 
     def _get_anime_info(self, anime_url):
         resp = self._get_request(self._to_url("/watch/%s" % anime_url))
+        extra_data = self._extract_anime_extra(resp)
+
         # Strip the server into boxes
         episodes_panel = self._EPISODE_PANEL_RE.findall(resp)[0]
         servers_text, epi_text = self._EPISODE_PANEL_POST_RE.findall(episodes_panel)[0]
@@ -99,7 +110,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
         episodes_boxes = self._EPISODE_BOXES_RE.findall(epi_text)
         servers = [(snames[i[0]], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
-        servers = dict([(i[0], map(self._format_episode(anime_url),
+        servers = dict([(i[0], map(self._format_episode(anime_url, extra_data),
                                    i[1][::-1])) for i in servers])
         return servers
 
@@ -170,12 +181,11 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         if not servers: return []
         mostSources = max(servers.iteritems(), key=lambda x: len(x[1]))[0]
         server = servers[mostSources]
-        resp = self._get_request(self._to_url("/watch/%s" % anime_url))
-        replot = self._PLOT_RE.findall(resp)
-        reimage = self._EPISODE_IMAGE_RE.findall(resp)
-        plot = ''.join(replot)
-        image = ''.join(reimage)
-        return map(lambda x: utils.allocate_item(x['name'], x['url'], plot, returnDirectory, image), server)
+        return map(lambda x: utils.allocate_item(x['name'],
+                                                 x['url'],
+                                                 returnDirectory,
+                                                 x['image'],
+                                                 x['plot']), server)
 
     def get_episode_sources(self, anime_url, episode):
         servers = self._get_anime_info(anime_url)
