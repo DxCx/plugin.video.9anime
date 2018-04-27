@@ -100,7 +100,9 @@ def __final_resolve_rapidvideo(url, label, referer=None):
     return playSource
 
 def __extract_streamango(url, page_content, referer=None):
-    return __extract_with_urlresolver(url, page_content, referer)()
+    url = __extract_with_urlresolver(url, page_content, referer)()
+    res = url.rsplit('|')[0].rsplit('/', 1)[-1]
+    return [(res, url)]
 
 def __extract_rapidvideo(url, page_content, referer=None):
     SOURCES_RE = re.compile("\<a\shref=\".+q=(.+?)\"\>")
