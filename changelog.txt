@@ -1,3 +1,6 @@
+[B]0.0.31[/B]
+- Adds support for Plot by SwagOtaku
+- Update url resolver to 5.0.14
 [B]0.0.30[/B]
 - Bugfix for titles by SwagOtako
 [B]0.0.29[/B]
