@@ -157,7 +157,7 @@ def PLAY_SOURCE(payload):
 
 @route('')
 def LIST_MENU(payload):
-    return control.draw_items([utils.allocate_item(name, url,'', True) for name, url in MENU_ITEMS])
+    return control.draw_items([utils.allocate_item(name, url, True, '') for name, url in MENU_ITEMS])
 
 router_process(control.get_plugin_url())
 
