@@ -99,6 +99,9 @@ def __final_resolve_rapidvideo(url, label, referer=None):
 
     return playSource
 
+def __extract_streamango(url, page_content, referer=None):
+    return __extract_with_urlresolver(url, page_content, referer)()
+
 def __extract_rapidvideo(url, page_content, referer=None):
     SOURCES_RE = re.compile("\<a\shref=\".+q=(.+?)\"\>")
     source_labels = SOURCES_RE.findall(page_content)
@@ -352,6 +355,9 @@ __register_extractor(["https://mcloud.to/embed",
 
 __register_extractor(["https://www.rapidvideo.com/e/"],
                      __extract_rapidvideo)
+
+__register_extractor(["https://streamango.com/embed/"],
+                     __extract_streamango)
 
 # TODO: debug to find how to extract
 __register_extractor("http://www.animeram.tv/files/ads/160.html", __ignore_extractor)
