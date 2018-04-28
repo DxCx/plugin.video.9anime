@@ -168,7 +168,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         generes = self._GENRE_LIST_RE.findall(genres_box)
         generes_out = [(i[1], "genre/%s/1" % i[0]) for i in generes]
         return map(lambda x: utils.allocate_item(x[0], x[1], True, ''), generes_out)
-    
+
     def get_genre(self, name, page=1):
         data = {
             "page": page,
