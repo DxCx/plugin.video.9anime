@@ -1,3 +1,5 @@
+[B]0.0.34[/B]
+- Bugfix for Generes by SwagOtaku
 [B]0.0.33[/B]
 - add support for resolution in Streamango
 [B]0.0.32[/B]
