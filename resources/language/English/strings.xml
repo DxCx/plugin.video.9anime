@@ -12,9 +12,22 @@
 	<string id="30006">Genres</string>
 	<string id="30007">Search</string>
 	<string id="30008">Settings</string>
+	<string id="30009">Watch List</string>
+
+	<string id="30010">All</string>
+	<string id="30011">Watching</string>
+	<string id="30012">Completed</string>
+	<string id="30013">On-Hold</string>
+	<string id="30014">Dropped</string>
+	<string id="30015">Plan To Watch</string>
 
 	<string id="30100">Fetching Sources</string>
 	<string id="30101">Processing %s</string>
 	<string id="30102">Please choose source: </string>
 	<string id="30103">Couldn't find eligible sources</string>
+
+	<string id="30200">9anime Login</string>
+	<string id="30201">Login Error</string>
+	<string id="30202">Login Refresh Occured. If anime not visible, back out and reload</string>
+	<string id="30203">Bookmark</string>
 </strings>

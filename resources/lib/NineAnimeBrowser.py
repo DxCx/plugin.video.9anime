@@ -3,15 +3,21 @@ import urllib
 from ui import utils
 from ui import BrowserBase
 from ui import http
+from ui import control
+import json,xbmcgui,xbmcaddon,requests,xbmc,bs4 as bs
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "http://9anime.is"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<div\sclass=\"inner\">\s<a\shref=\".+?/watch/(.+?)\"\s[^>]+?>\s<img\ssrc=\"(.+?)\"\salt=\"([^\"]+?)\"[^>]*?>.+?<\/div>\s<\/div>", re.DOTALL)
+    _ANIME_WATCHLIST_VIEW_ITEMS_RE = \
+    re.compile('<div class="item .+?"> <a class="thumb" href="/watch/(.+?)"><img alt="(.+?)" src="(.+?)"/></a>', re.DOTALL)    
     _PAGES_RE = \
     re.compile("<div\sclass=\"paging-wrapper\">\s(.+?)\s</div>", re.DOTALL)
     _PAGES_TOTAL_RE = \
     re.compile("<span\sclass=\"total\">(\d+)<\/span>", re.DOTALL)
+    _PAGES_WATCHLIST_TOTAL_RE = \
+    re.compile('.+?-page=(.+?)', re.DOTALL)
     _GENRES_BOX_RE = \
     re.compile("<a>Genre</a>\s<ul\sclass=\"sub\">(.+?)</ul>", re.DOTALL)
     _GENRE_LIST_RE = \
@@ -45,9 +51,29 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("filter")
         return self._process_anime_view(url, data, "%s/%%d" % filterName, page)
 
+    def _get_watchlist_request(self, url, data=None):
+        cookie = {'__cfduid': '%s' %(control.getSetting("login.tokencfd")),'web_theme': 'dark', 'session': '%s' %(control.getSetting("login.tokenses")), 'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': '%s' %(control.getSetting("login.tokenrem"))}
+        results = requests.get(url, data, cookies=cookie)
+        if results.status_code == 200:
+            pass
+        elif results.status_code == 503:
+            xbmc.executebuiltin('RunPlugin(plugin://plugin.video.9anime/login_refresh)')
+            cookie = {'__cfduid': '%s' %(control.getSetting("login.tokencfd")),'web_theme': 'dark', 'session': '%s' %(control.getSetting("login.tokenses")), 'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': '%s' %(control.getSetting("login.tokenrem"))}
+            results = requests.get(url, data, cookies=cookie)
+        results = results.text
+        soup = bs.BeautifulSoup(results, 'html.parser')
+        results = soup.find_all('div', attrs={"class":"content "})
+        return results
+    
     def _parse_anime_view(self, res):
         name = res[2]
         image = res[1]
+        url = res[0]
+        return utils.allocate_item(name, "animes/" + url, True, image)
+
+    def _parse_watchlist_anime_view(self, res):
+        name = res[1]
+        image = res[2]
         url = res[0]
         return utils.allocate_item(name, "animes/" + url, True, image)
 
@@ -58,6 +84,20 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             return []
 
         total_pages = int(self._PAGES_TOTAL_RE.findall(pages_html[0])[0])
+        if page >= total_pages:
+            return [] # Last page
+
+        next_page = page + 1
+        name = "Next Page (%d/%d)" % (next_page, total_pages)
+        return [utils.allocate_item(name, base_url % next_page, True, None)]
+
+    def _handle_watchlist_paging(self, results, base_url, page):
+        pages_html = self._PAGES_WATCHLIST_TOTAL_RE.findall(str(results))
+        # No Pages? empty list ;)
+        if not len(pages_html):
+            return []
+
+        total_pages = int(self._PAGES_WATCHLIST_TOTAL_RE.findall(str(results))[-2])
         if page >= total_pages:
             return [] # Last page
 
@@ -83,6 +123,13 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         all_results = map(self._parse_anime_view,
                           self._ANIME_VIEW_ITEMS_RE.findall(results))
         all_results += self._handle_paging(results, base_plugin_url, page)
+        return all_results
+
+    def _process_watchlist_view(self, url, data, base_plugin_url, page):       
+        results = self._get_watchlist_request(url, data)
+        all_results = map(self._parse_watchlist_anime_view,
+                          self._ANIME_WATCHLIST_VIEW_ITEMS_RE.findall(str(results)))
+        all_results += self._handle_watchlist_paging(results, base_plugin_url, page)
         return all_results
 
     def _format_episode(self, anime_url, extra):
@@ -162,6 +209,54 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("newest")
         return self._process_anime_view(url, data, "newest/%d", page)
 
+    def get_all(self, page=1):
+        data = {
+            "folder": 'all',
+            "all-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "all/%d", page)
+
+    def get_watching(self,  page=1):
+        data = {
+            "folder": 'watching',
+            "watching-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "watching/%d", page)    
+
+    def get_completed(self,  page=1):
+        data = {
+            "folder": 'watched',
+            "watched-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "watched/%d", page)
+
+    def get_onhold(self,  page=1):
+        data = {
+            "folder": 'onhold',
+            "onhold-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "onhold/%d", page)
+
+    def get_dropped(self,  page=1):
+        data = {
+            "folder": 'dropped',
+            "dropped-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "dropped/%d", page)
+
+    def get_planned(self,  page=1):
+        data = {
+            "folder": 'planned',
+            "planned-page": page
+            }
+        url = self._to_url("user/watchlist")
+        return self._process_watchlist_view(url, data, "planned/%d", page)
+    
     def get_genres(self):
         res = self._get_request(self._to_url("/watch"))
         genres_box = self._GENRES_BOX_RE.findall(res)[0]
@@ -195,3 +290,75 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         sources = filter(lambda x: len(x[1]) != 0, sources)
         sources = map(lambda x: (x[0], x[1][0]['source']), sources)
         return sources
+
+    def login(self):
+        try:
+            control.setSetting(id='login.tokenrem', value='')
+            control.setSetting(id='login.tokenses', value='')
+            control.setSetting(id='login.tokencfd', value='')
+            payload = {
+                'username': control.getSetting("9anime.username"),
+                'password': control.getSetting("9anime.password"),
+                'remember': 1
+                }
+            url = self._to_url_login("user/ajax/login")
+            p = requests.post(url, data=payload)
+            r = p.headers['Set-Cookie']
+            remember_me = ''.join(re.compile('remember_web_.+?=(.+?);').findall(r))
+            session = ''.join(re.compile('session=(.+?);').findall(r))
+            cfduid = ''.join(re.compile('__cfduid=(.+?);').findall(r))
+            control.setSetting(id='login.tokenrem', value=remember_me)
+            control.setSetting(id='login.tokenses', value=session)
+            control.setSetting(id='login.tokencfd', value=cfduid)
+            control.setSetting(id='login.auth', value='loggedin')
+            dialog = xbmcgui.Dialog()
+            dialog.ok(control.lang(30200), json.loads(p.text)['message'])
+            control.refresh()
+        except:
+            dialog = xbmcgui.Dialog()
+            dialog.ok(control.lang(30200), control.lang(30201))
+
+    def login_refresh(self):
+        try:
+            control.setSetting(id='login.tokenrem', value='')
+            control.setSetting(id='login.tokenses', value='')
+            control.setSetting(id='login.tokencfd', value='')
+            payload = {
+                'username': control.getSetting("9anime.username"),
+                'password': control.getSetting("9anime.password"),
+                'remember': 1
+                }
+            url = self._to_url_login("user/ajax/login")
+            p = requests.post(url, data=payload)
+            r = p.headers['Set-Cookie']
+            remember_me = ''.join(re.compile('remember_web_.+?=(.+?);').findall(r))
+            session = ''.join(re.compile('session=(.+?);').findall(r))
+            cfduid = ''.join(re.compile('__cfduid=(.+?);').findall(r))
+            control.setSetting(id='login.tokenrem', value=remember_me)
+            control.setSetting(id='login.tokenses', value=session)
+            control.setSetting(id='login.tokencfd', value=cfduid)
+            control.setSetting(id='login.auth', value='loggedin')
+            dialog = xbmcgui.Dialog()
+            dialog.ok(control.lang(30200), control.lang(30202))
+        except:
+            dialog = xbmcgui.Dialog()
+            dialog.ok(control.lang(30200), control.lang(30201))
+
+    def bookmark(self, anime_id, folder):
+        anime_id = anime_id.split('.')[-1]
+        data = {
+            "id" : anime_id[:4],
+            "folder": folder,
+            "random": 1
+            }
+        cookie = {'__cfduid': '%s' %(control.getSetting("login.tokencfd")),'web_theme': 'dark', 'session': '%s' %(control.getSetting("login.tokenses")), 'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': '%s' %(control.getSetting("login.tokenrem"))}
+        url = self._to_url_login("user/ajax/edit-watchlist")
+        results = requests.get(url, data, cookies=cookie)
+        if results.status_code == 200:
+            pass
+        elif results.status_code == 503:
+            xbmc.executebuiltin('RunPlugin(plugin://plugin.video.9anime/login_refresh)')
+            cookie = {'__cfduid': '%s' %(control.getSetting("login.tokencfd")),'web_theme': 'dark', 'session': '%s' %(control.getSetting("login.tokenses")), 'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': '%s' %(control.getSetting("login.tokenrem"))}
+            results = requests.get(url, data, cookies=cookie)
+        dialog = xbmcgui.Dialog()
+        dialog.ok(control.lang(30203), json.loads(results.text)['message'])

@@ -3,6 +3,11 @@
 	<category label="General">
 		<setting id="reverseorder" type="labelenum" label="Episode order" values="Ascending|Descending" default="Descending"/>
 		<setting id="displaystyle" type="labelenum" label="Display episodes as" values="Directory|List" default="List"/>
+        	
+		<setting type="lsep" label="9anime Login"/>
+        	<setting id="9anime.username" type="text" label="Username:" default=""/>
+        	<setting id="9anime.password" type="text" option="hidden" label="Password:" default=""/>
+		<setting id="9anime.login" type="action" label="Click to Login..." option="close" action="RunPlugin(plugin://plugin.video.9anime/login)"/>
 	</category>
 	<category label="Servers">
 		<setting id="serverstreamango" type="bool" label="Use Streamango" default="true"/>

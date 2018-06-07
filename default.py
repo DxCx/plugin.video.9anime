@@ -7,6 +7,7 @@ import urlparse
 
 AB_LIST = [".", "0"] + [chr(i) for i in range(ord("A"), ord("Z")+1)]
 MENU_ITEMS = [
+    (control.lang(30009), "watchlist"),
     (control.lang(30000), "latest"),
     (control.lang(30001), "newest"),
     (control.lang(30002), "recent_subbed"),
@@ -24,9 +25,32 @@ SERVER_CHOICES = {
     "serveropenload": "OpenLoad",
 }
 
+WATCHLIST_ITEMS = [
+    (control.lang(30010), "all"),
+    (control.lang(30011), "watching"),
+    (control.lang(30012), "completed"),
+    (control.lang(30013), "onhold"),
+    (control.lang(30014), "dropped"),
+    (control.lang(30015), "planned")
+]
+
 _BROWSER = NineAnimeBrowser()
 control.setContent('tvshows');
 
+params = dict(urlparse.parse_qsl(sys.argv[2].replace('?', '')))
+
+try: action = params['action']
+except: action = None
+
+try: anime_id = params['anime_id']
+except: anime_id = None
+
+try: folder = params['folder']
+except: folder = None
+
+if action == 'bookmark':
+    _BROWSER.bookmark(anime_id, folder)
+    
 def isDirectoryStyle():
     style = control.getSetting('displaystyle')
     return "Directory" == style
@@ -41,6 +65,14 @@ def sortResultsByRes(fetched_urls):
                   utils.parse_resolution_of_source(x[0]),
                   reverse=True)
 
+@route('login')
+def LOGIN(payload):
+    _BROWSER.login()
+
+@route('login_refresh')
+def LOGIN_REFRESH(payload):
+    _BROWSER.login_refresh()
+
 @route('settings')
 def SETTINGS(payload):
     return control.settingsMenu();
@@ -52,6 +84,10 @@ def ANIMES_PAGE(animeurl):
     if ( "Ascending" in order ):
         episodes = reversed(episodes)
     return control.draw_items(episodes)
+
+@route('watchlist')
+def LOGIN_MENU(payload):
+    return control.draw_items([utils.allocate_item(name, url, True, '') for name, url in WATCHLIST_ITEMS])
 
 @route('newest')
 def NEWEST(payload):
@@ -100,6 +136,54 @@ def POPDUBBED(payload):
 @route('popular_dubbed/*')
 def POPDUBBED_PAGES(payload):
     return control.draw_items(_BROWSER.get_popular_dubbed(int(payload)))
+
+@route('all')
+def ALL(payload):
+    return control.draw_items(_BROWSER.get_all())
+
+@route('all/*')
+def ALL_PAGES(payload):
+    return control.draw_items(_BROWSER.get_all(int(payload)))
+
+@route('watching')
+def WATCHING(payload):
+    return control.draw_items(_BROWSER.get_watching())
+
+@route('watching/*')
+def WATCHING_PAGES(payload):
+    return control.draw_items(_BROWSER.get_watching(int(payload)))
+
+@route('completed')
+def WATCHED(payload):
+    return control.draw_items(_BROWSER.get_completed())
+
+@route('completed/*')
+def WATCHED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_completed(int(payload)))
+
+@route('onhold')
+def ONHOLD(payload):
+    return control.draw_items(_BROWSER.get_onhold())
+
+@route('onhold/*')
+def ONHOLD_PAGES(payload):
+    return control.draw_items(_BROWSER.get_onhold(int(payload)))
+
+@route('dropped')
+def DROPPED(payload):
+    return control.draw_items(_BROWSER.get_dropped())
+
+@route('dropped/*')
+def DROPPED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_dropped(int(payload)))
+
+@route('planned')
+def PLANNED(payload):
+    return control.draw_items(_BROWSER.get_planned())
+
+@route('planned/*')
+def PLANNED_PAGES(payload):
+    return control.draw_items(_BROWSER.get_planned(int(payload)))
 
 @route('search')
 def SEARCH(payload):
@@ -157,7 +241,9 @@ def PLAY_SOURCE(payload):
 
 @route('')
 def LIST_MENU(payload):
-    return control.draw_items([utils.allocate_item(name, url, True, '') for name, url in MENU_ITEMS])
+    if control.getSetting("login.auth") == '':
+        return control.draw_items([utils.allocate_item(name, url, True, '') for name, url in MENU_ITEMS[1:]])
+    else:
+        return control.draw_items([utils.allocate_item(name, url, True, '') for name, url in MENU_ITEMS])
 
 router_process(control.get_plugin_url())
-
