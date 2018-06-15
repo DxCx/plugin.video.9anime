@@ -1,3 +1,5 @@
+[B]0.0.35[/B]
+- Add Support for Login & Watchlist (By SwagOtaku)
 [B]0.0.34[/B]
 - Bugfix for Generes by SwagOtaku
 [B]0.0.33[/B]
