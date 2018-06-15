@@ -13,13 +13,7 @@
 	<string id="30007">Search</string>
 	<string id="30008">Settings</string>
 	<string id="30009">Watch List</string>
-
-	<string id="30010">All</string>
-	<string id="30011">Watching</string>
-	<string id="30012">Completed</string>
-	<string id="30013">On-Hold</string>
-	<string id="30014">Dropped</string>
-	<string id="30015">Plan To Watch</string>
+	<string id="30010">Logout</string>
 
 	<string id="30100">Fetching Sources</string>
 	<string id="30101">Processing %s</string>
@@ -30,4 +24,14 @@
 	<string id="30201">Login Error</string>
 	<string id="30202">Login Refresh Occured. If anime not visible, back out and reload</string>
 	<string id="30203">Bookmark</string>
+
+	<string id="30300">All</string>
+	<string id="30301">Watching</string>
+	<string id="30302">Completed</string>
+	<string id="30303">On-Hold</string>
+	<string id="30304">Dropped</string>
+	<string id="30305">Plan To Watch</string>
+
+	<string id="40000">Add To </string>
+	<string id="40001">Remove Entry</string>
 </strings>

@@ -7,11 +7,11 @@ from ui import control
 import json,xbmcgui,xbmcaddon,requests,xbmc,bs4 as bs
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
-    _BASE_URL = "http://9anime.is"
+    _BASE_URL = "https://9anime.is"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<div\sclass=\"inner\">\s<a\shref=\".+?/watch/(.+?)\"\s[^>]+?>\s<img\ssrc=\"(.+?)\"\salt=\"([^\"]+?)\"[^>]*?>.+?<\/div>\s<\/div>", re.DOTALL)
     _ANIME_WATCHLIST_VIEW_ITEMS_RE = \
-    re.compile('<div class="item .+?"> <a class="thumb" href="/watch/(.+?)"><img alt="(.+?)" src="(.+?)"/></a>', re.DOTALL)    
+    re.compile('<div class="item .+?"> <a class="thumb" href="/watch/(.+?)"><img alt="(.+?)" src="(.+?)"/></a>', re.DOTALL)
     _PAGES_RE = \
     re.compile("<div\sclass=\"paging-wrapper\">\s(.+?)\s</div>", re.DOTALL)
     _PAGES_TOTAL_RE = \
@@ -64,7 +64,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         soup = bs.BeautifulSoup(results, 'html.parser')
         results = soup.find_all('div', attrs={"class":"content "})
         return results
-    
+
     def _parse_anime_view(self, res):
         name = res[2]
         image = res[1]
@@ -125,7 +125,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         all_results += self._handle_paging(results, base_plugin_url, page)
         return all_results
 
-    def _process_watchlist_view(self, url, data, base_plugin_url, page):       
+    def _process_watchlist_view(self, url, data, base_plugin_url, page):
         results = self._get_watchlist_request(url, data)
         all_results = map(self._parse_watchlist_anime_view,
                           self._ANIME_WATCHLIST_VIEW_ITEMS_RE.findall(str(results)))
@@ -209,7 +209,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("newest")
         return self._process_anime_view(url, data, "newest/%d", page)
 
-    def get_all(self, page=1):
+    def get_watchlist_all(self, page=1):
         data = {
             "folder": 'all',
             "all-page": page
@@ -217,15 +217,15 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("user/watchlist")
         return self._process_watchlist_view(url, data, "all/%d", page)
 
-    def get_watching(self,  page=1):
+    def get_watchlist_watching(self,  page=1):
         data = {
             "folder": 'watching',
             "watching-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "watching/%d", page)    
+        return self._process_watchlist_view(url, data, "watching/%d", page)
 
-    def get_completed(self,  page=1):
+    def get_watchlist_completed(self,  page=1):
         data = {
             "folder": 'watched',
             "watched-page": page
@@ -233,7 +233,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("user/watchlist")
         return self._process_watchlist_view(url, data, "watched/%d", page)
 
-    def get_onhold(self,  page=1):
+    def get_watchlist_onhold(self,  page=1):
         data = {
             "folder": 'onhold',
             "onhold-page": page
@@ -241,7 +241,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("user/watchlist")
         return self._process_watchlist_view(url, data, "onhold/%d", page)
 
-    def get_dropped(self,  page=1):
+    def get_watchlist_dropped(self,  page=1):
         data = {
             "folder": 'dropped',
             "dropped-page": page
@@ -249,14 +249,14 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = self._to_url("user/watchlist")
         return self._process_watchlist_view(url, data, "dropped/%d", page)
 
-    def get_planned(self,  page=1):
+    def get_watchlist_planned(self,  page=1):
         data = {
             "folder": 'planned',
             "planned-page": page
             }
         url = self._to_url("user/watchlist")
         return self._process_watchlist_view(url, data, "planned/%d", page)
-    
+
     def get_genres(self):
         res = self._get_request(self._to_url("/watch"))
         genres_box = self._GENRES_BOX_RE.findall(res)[0]
@@ -290,6 +290,19 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         sources = filter(lambda x: len(x[1]) != 0, sources)
         sources = map(lambda x: (x[0], x[1][0]['source']), sources)
         return sources
+
+    def _to_url_login(self, url):
+        return self._to_url(url).replace('https://', 'https://www5.')
+
+    def is_logged_in(self):
+        return control.getSetting("login.auth") != ''
+
+    def logout(self):
+        control.setSetting(id='login.tokenrem', value='')
+        control.setSetting(id='login.tokenses', value='')
+        control.setSetting(id='login.tokencfd', value='')
+        control.setSetting(id='login.auth', value='')
+        control.refresh()
 
     def login(self):
         try:

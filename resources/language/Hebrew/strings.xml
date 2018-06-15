@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
 	<!-- Category strings -->
 	<string id="20000">חלץ תמונות: </string>
@@ -11,9 +12,26 @@
 	<string id="30006">לפי סיגנון</string>
 	<string id="30007">חיפוש</string>
 	<string id="30008">הגדרות</string>
+	<string id="30009">רשימת צפיה</string>
+	<string id="30010">התנתק</string>
 
 	<string id="30100">מחפש מקורות</string>
 	<string id="30101">מעבד %s</string>
 	<string id="30102">אנא בחר מקור : </string>
 	<string id="30103">לא נמצאו מקורות</string>
+
+	<string id="30200">התחברות ל9Anime</string>
+	<string id="30201">כשלון בהתחברות</string>
+	<string id="30202">התחברת מחדש, אם אינך רואה את הרשימה, צא ותכנס מחדש</string>
+	<string id="30203">סימניה</string>
+
+	<string id="30300">הכל</string>
+	<string id="30301">צופה</string>
+	<string id="30302">הסתיים</string>
+	<string id="30303">בהפסקה</string>
+	<string id="30304">הפסקת צפיה</string>
+	<string id="30305">מתכנן לצפות</string>
+
+	<string id="40000">הוסף לרישמת צפיה: </string>
+	<string id="40001">הסר מרשימת צפיה</string>
 </strings>
