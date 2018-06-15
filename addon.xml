@@ -1,10 +1,10 @@
-<addon id="plugin.video.9anime" name="9Anime" provider-name="DxCx" version="0.0.34">
+<addon id="plugin.video.9anime" name="9Anime" provider-name="DxCx" version="0.0.35">
   <requires>
     <import addon="xbmc.python" version="2.25.0" />
     <import addon="script.module.requests" version="2.12.4" />
     <import addon="script.common.plugin.cache" version="2.5.5" />
     <import addon="script.module.urlresolver" version="5.0.14" />
-    <import addon="script.module.beautifulsoup4" version="4.5.3"/>  
+    <import addon="script.module.beautifulsoup4" version="4.5.3" />  
   </requires>
   <extension library="default.py" point="xbmc.python.pluginsource">
         <provides>video</provides>
