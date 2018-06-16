@@ -1,3 +1,5 @@
+[B]0.0.36[/B]
+- Bugfix for watchlist paging (By SwagOtaku)
 [B]0.0.35[/B]
 - Add Support for Login & Watchlist (By SwagOtaku)
 [B]0.0.34[/B]
