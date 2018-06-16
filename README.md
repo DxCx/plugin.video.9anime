@@ -8,7 +8,8 @@ Kodi Plugin that lets you watch almost all animes HD and for free.
 ## Features
 * Watch status tracking.
 * Add your favorite animes as favorite for easy access later
-* Fast loading times when disabling image extraction.
+* Fast loading times
+* Login & Watchlist support
 
 ## Instructions:
 
