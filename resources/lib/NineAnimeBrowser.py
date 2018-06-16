@@ -215,7 +215,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "all-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "all/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_all/%d", page)
 
     def get_watchlist_watching(self,  page=1):
         data = {
@@ -223,7 +223,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "watching-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "watching/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_watching/%d", page)
 
     def get_watchlist_completed(self,  page=1):
         data = {
@@ -231,7 +231,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "watched-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "watched/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_completed/%d", page)
 
     def get_watchlist_onhold(self,  page=1):
         data = {
@@ -239,7 +239,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "onhold-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "onhold/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_onhold/%d", page)
 
     def get_watchlist_dropped(self,  page=1):
         data = {
@@ -247,7 +247,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "dropped-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "dropped/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_dropped/%d", page)
 
     def get_watchlist_planned(self,  page=1):
         data = {
@@ -255,7 +255,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             "planned-page": page
             }
         url = self._to_url("user/watchlist")
-        return self._process_watchlist_view(url, data, "planned/%d", page)
+        return self._process_watchlist_view(url, data, "watchlist_planned/%d", page)
 
     def get_genres(self):
         res = self._get_request(self._to_url("/watch"))
