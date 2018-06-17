@@ -85,7 +85,7 @@ class NineAnimeUrlExtender:
 
     @classmethod
     def get_extra_url_parameter(cls, id, server, ts):
-        DD = 'iQDWcsGqN'
+        DD = 'bVZX0bdD'
         params = [
             ('id', str(id)),
             ('ts', str(ts)),
