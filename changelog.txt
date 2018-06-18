@@ -1,3 +1,5 @@
+[B]0.0.38[/B]
+- 9Anime Token Update (by ThePyrotechnic)
 [B]0.0.37[/B]
 - Token Update (By Prometheusx-git)
 [B]0.0.36[/B]
