@@ -1,3 +1,6 @@
+[B]0.0.40[/B]
+- BugFix for logic (#277) by SwagOtaku
+- Fix for token by Prometheusx-git
 [B]0.0.39[/B]
 - 9AnimeUrlExtender update (By Prometheusx-git)
 [B]0.0.38[/B]
