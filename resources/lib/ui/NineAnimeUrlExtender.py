@@ -85,7 +85,7 @@ class NineAnimeUrlExtender:
 
     @classmethod
     def get_extra_url_parameter(cls, id, server, ts):
-        DD = 'X8uEFlj2'
+        DD = 'bfcad671'
         params = [
             ('id', str(id)),
             ('ts', str(ts)),
@@ -109,6 +109,6 @@ class NineAnimeUrlExtender:
     def _a(cls, t, e):
         n = 0
         for i in range(max(len(t), len(e))):
-            n += ord(e[i]) if i < len(e) else i
-            n += ord(t[i]) if i < len(t) else i
+            n *= ord(e[i]) if i < len(e) else 8
+            n *= ord(t[i]) if i < len(t) else 8
         return format(n, 'x')  # convert n to hex string
