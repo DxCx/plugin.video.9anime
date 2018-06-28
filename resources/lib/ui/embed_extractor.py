@@ -9,6 +9,12 @@ import time
 from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
 
+_9ANIME_EXTRA_PARAM = 834
+
+def set_9anime_extra(new_val):
+    global _9ANIME_EXTRA_PARAM
+    _9ANIME_EXTRA_PARAM = new_val
+
 def load_video_from_url(in_url):
     found_extractor = None
 
@@ -113,6 +119,22 @@ def __extract_rapidvideo(url, page_content, referer=None):
 
     return sources
 
+def __9anime_retry(ep_id, server_id, retry):
+    reqUrl = "https://projectman.ga/api/url?id=%s&server=%s&retry=%s" % \
+    (ep_id, server_id, retry)
+    response = json.loads(http.send_request(reqUrl).text)
+    result_url = response["results"]
+
+    # Store for next
+    try:
+        url_info = urlparse.urlparse(result_url)
+        arguments = dict(urlparse.parse_qsl(url_info.query))
+        set_9anime_extra(arguments["_"])
+    except:
+        print "[*E*] retry store failed"
+
+    return result_url
+
 def __extract_9anime(url, page_content, referer=None):
     episode_id = url.rsplit('/', 1)[1]
     url_info = urlparse.urlparse(url)
@@ -121,19 +143,32 @@ def __extract_9anime(url, page_content, referer=None):
 
     url_base = "%s://%s" % (scheme, domain)
 
-    ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
     server_id = NineAnimeUrlExtender.get_server_value(page_content)
-    extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, server_id, ts_value)
-    ep_info_url = "%s/ajax/episode/info?ts=%s&_=%d&id=%s&server=%d" % \
+    ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
+    #extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, server_id, ts_value)
+    extra_param = _9ANIME_EXTRA_PARAM
+
+    tryNo = 0
+    ep_info_url = "%s/ajax/episode/info?ts=%s&_=%s&id=%s&server=%d" % \
     (url_base, ts_value, extra_param, episode_id, server_id)
 
-    time.sleep(0.3)
-    urlRequest = http.send_request(ep_info_url)
-    grabInfo = json.loads(urlRequest.text)
-    grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
-    if 'error' in grabInfo.keys():
-        raise Exception('error while trying to fetch info: %s' %
-                        grabInfo['error'])
+    while True:
+        time.sleep(0.3)
+        urlRequest = http.send_request(ep_info_url)
+        grabInfo = json.loads(urlRequest.text)
+        grabInfo = NineAnimeUrlExtender.decode_info(grabInfo)
+        if 'error' in grabInfo.keys():
+            if tryNo < 2:
+                tryNo += 1
+                retry = "true" if tryNo == 2 else "false"
+                ep_info_url = __9anime_retry(episode_id, server_id, retry)
+                continue
+
+            raise Exception('error while trying to fetch info: %s' %
+                            grabInfo['error'])
+
+        break
+
     if grabInfo['type'] == 'iframe':
         target = grabInfo['target']
         if target.startswith('//'):
