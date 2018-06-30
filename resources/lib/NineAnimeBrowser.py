@@ -71,6 +71,10 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         url = res[0]
         return utils.allocate_item(name, "animes/" + url, True, image)
 
+    def _parse_history_view(self, res):
+        name = res
+        return utils.allocate_item(name, "search/" + name + "/1", True)
+
     def _parse_watchlist_anime_view(self, res):
         name = res[1]
         image = res[2]
@@ -168,6 +172,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         }
         url = self._to_url("search")
         return self._process_anime_view(url, data, "search/%s/%%d" % search_string, page)
+
+    def search_history(self,search_array):
+    	result = map(self._parse_history_view,search_array)
+    	result.insert(0,utils.allocate_item("New Search", "search", True))
+    	result.insert(len(result),utils.allocate_item("Clear..", "clear_history", True))
+    	return result
 
     def get_recent_dubbed(self,  page=1):
         return self._get_by_filter('recent_dubbed', {

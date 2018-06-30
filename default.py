@@ -15,7 +15,7 @@ MENU_ITEMS = [
     (control.lang(30004), "recent_dubbed", False),
     (control.lang(30005), "popular_dubbed", False),
     (control.lang(30006), "genres", False),
-    (control.lang(30007), "search", False),
+    (control.lang(30007), "search_history", False),
     (control.lang(30008), "settings", False),
     (control.lang(30010), "logout", True),
 ]
@@ -34,6 +34,8 @@ WATCHLIST_ITEMS = [
     (control.lang(30304), "watchlist_dropped"),
     (control.lang(30305), "watchlist_planned")
 ]
+
+HISTORY_DELIM = ":_:"
 
 _BROWSER = NineAnimeBrowser()
 control.setContent('tvshows');
@@ -220,10 +222,32 @@ def PLANNED(payload, params):
 def PLANNED_PAGES(payload, params):
     return control.draw_items(_BROWSER.get_watchlist_planned(int(payload)), unbookmark_cm)
 
+@route('search_history')
+def SEARCH_HISTORY(payload, params):
+    history = control.getSetting("9anime.history")
+    history_array = history.split(HISTORY_DELIM)
+    if history != "" and "Yes" in control.getSetting('searchhistory') :
+        return control.draw_items(_BROWSER.search_history(history_array))
+    else :
+        return SEARCH(payload,params)
+
+@route('clear_history')
+def CLEAR_HISTORY(payload, params):
+    control.setSetting("9anime.history","")
+    return LIST_MENU(payload, params)
+
 @route('search')
 def SEARCH(payload, params):
     query = control.keyboard(control.lang(30007))
     if query:
+        if "Yes" in control.getSetting('searchhistory') :
+            history = control.getSetting("9anime.history")
+            if history != "" :
+                query = query+HISTORY_DELIM
+            history=query+history
+            while history.count(HISTORY_DELIM) > 6 :
+                history=history.rsplit(HISTORY_DELIM, 1)[0]
+            control.setSetting("9anime.history",history)
         return control.draw_items(_BROWSER.search_site(query))
     return False
 

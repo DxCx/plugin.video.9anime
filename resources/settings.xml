@@ -3,6 +3,7 @@
 	<category label="General">
 		<setting id="reverseorder" type="labelenum" label="Episode order" values="Ascending|Descending" default="Descending"/>
 		<setting id="displaystyle" type="labelenum" label="Display episodes as" values="Directory|List" default="List"/>
+		<setting id="searchhistory" type="labelenum" label="Enable search history" values="Yes|No" default="Yes"/>
         	
 		<setting type="lsep" label="9anime Login"/>
         	<setting id="9anime.username" type="text" label="Username:" default=""/>
