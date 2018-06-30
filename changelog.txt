@@ -1,3 +1,5 @@
+[B]0.0.42[/B]
+- Add Search History (By xakiru)
 [B]0.0.41[/B]
 - Fix Sources (Thanks to RedNinjaX and romxuk)
 [B]0.0.40[/B]
