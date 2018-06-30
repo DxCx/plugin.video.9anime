@@ -24,7 +24,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     re.compile("<li>\s<a\shref=\"/genre\/(.+?)\"\stitle=\"(.+?)\">",
                re.DOTALL)
     _EPISODES_RE = \
-    re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">.+?</li>",
+    re.compile("<li>\s<a.+?data-id=\"(.+?)\" data-base=\"(\d+)\".+?data-comment=\"(.+?)\".+?data-title=\"(.+?)\".+?href=\"\/watch\/.+?\">(.+?)</a>\s</li>",
                re.DOTALL)
     _PLOT_RE = \
     re.compile('<div class="desc">(.+?)</div>', re.DOTALL)
@@ -141,10 +141,10 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             base = {}
             base.update(extra)
             base.update({
-                "id": int(einfo[1]),
-                "url": "play/" + anime_url + "/" + einfo[1],
+                "id": einfo[2],
+                "url": "play/" + anime_url + "/" + einfo[2],
                 "source": self._to_url("watch/%s/%s" % (anime_url, einfo[0])),
-                "name": "Episode %s (%s)" % (einfo[1], einfo[2])
+                "name": "Episode %s (%s)" % (einfo[4], einfo[3])
             })
             return base
 

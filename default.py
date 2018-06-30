@@ -270,7 +270,7 @@ def GENRE_ANIMES(payload, params):
 @route('play/*')
 def PLAY(payload, params):
     anime_url, episode = payload.rsplit("/", 1)
-    sources = _BROWSER.get_episode_sources(anime_url, int(episode))
+    sources = _BROWSER.get_episode_sources(anime_url, episode)
 
     serverChoice = filter(lambda x:
         control.getSetting(x[0]) == 'true', SERVER_CHOICES.iteritems())
