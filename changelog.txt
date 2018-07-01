@@ -1,3 +1,5 @@
+[B]0.0.43[/B]
+- Fix for Duplicate Episodes (Thanks HackedGameMaker for the help)
 [B]0.0.42[/B]
 - Add Search History (By xakiru)
 [B]0.0.41[/B]
