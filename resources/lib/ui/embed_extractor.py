@@ -9,7 +9,7 @@ import time
 from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
 
-_9ANIME_EXTRA_PARAM = 834
+_9ANIME_EXTRA_PARAM = 634
 
 def set_9anime_extra(new_val):
     global _9ANIME_EXTRA_PARAM
@@ -97,7 +97,7 @@ def __9anime_extract_direct(refer_url, grabInfo):
     return __check_video_list(refer_url, map(lambda x: (x['label'], x['file']), resp['data']))
 
 def __final_resolve_rapidvideo(url, label, referer=None):
-    VIDEO_RE = re.compile("\<source\ssrc=\"([^\"]+?)\"")
+    VIDEO_RE = re.compile(",\ssrc: \"([^\"]+?)\"")
     def playSource():
         playUrl = http.add_referer_url("%s&q=%s" % (url, label), referer)
         reqObj = http.send_request(playUrl)
