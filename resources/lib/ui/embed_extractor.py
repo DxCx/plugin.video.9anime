@@ -246,7 +246,11 @@ def __extract_mycloud(url, content, referer=None):
     m3u_list = m3u_list[0]
 
     # Read and parse all res
-    playlist_content = http.send_request(http.add_referer_url(m3u_list, url)).text
+    playlist_req = http.send_request(http.add_referer_url(m3u_list, url))
+    if playlist_req.status_code != 200:
+        raise Exception("Error from server %d" % playlist_req.status_code)
+
+    playlist_content = playlist_req.text
     playlist_content = map(lambda x: x.strip(), playlist_content.split("\n"))
     playlist_content = filter(lambda x: not x.startswith("#") and len(x), playlist_content)
 
