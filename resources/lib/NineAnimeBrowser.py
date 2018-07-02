@@ -302,7 +302,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return sources
 
     def _to_url_login(self, url):
-        return self._to_url(url).replace('https://', 'https://www6.')
+        return self._to_url(url).replace('https://', 'https://www7.')
 
     def is_logged_in(self):
         return control.getSetting("login.auth") != ''
