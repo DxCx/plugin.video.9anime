@@ -1,3 +1,5 @@
+[B]0.0.46[/B]
+- Login feature update (By SwagOtaku)
 [B]0.0.45[/B]
 - Update URLResolver to 5.0.20 (Fixes MCloud)
 - Fix for RapidVideo playback
