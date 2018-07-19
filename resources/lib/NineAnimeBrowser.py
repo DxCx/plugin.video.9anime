@@ -6,6 +6,9 @@ from ui import http
 from ui import control
 import json,xbmcgui,xbmcaddon,requests,xbmc,bs4 as bs
 
+from ui.embed_extractor import set_9anime_extra
+set_9anime_extra(777)
+
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "https://9anime.is"
     _ANIME_VIEW_ITEMS_RE = \
@@ -302,7 +305,7 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         return sources
 
     def _to_url_login(self, url):
-        return self._to_url(url).replace('https://', 'https://www7.')
+        return self._to_url(url).replace('https://', 'https://%s.' % (control.getSetting("9anime.login_tld")))
 
     def is_logged_in(self):
         return control.getSetting("login.auth") != ''
@@ -385,3 +388,18 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
             results = requests.get(url, data, cookies=cookie)
         dialog = xbmcgui.Dialog()
         dialog.ok(control.lang(30203), json.loads(results.text)['message'])
+
+    def episode_playing(self, anime_id):
+        try:
+            anime_id = ' '.join(anime_id)
+            anime_id = anime_id.rsplit('.', 1)[-1]
+            anime_id = anime_id.rsplit('/', 1)
+            data = {
+                'data[%s]' %(anime_id[0]): anime_id[1]
+                }
+            cookie = {'__cfduid': '%s' %(control.getSetting("login.tokencfd")),'web_theme': 'dark', 'session': '%s' %(control.getSetting("login.tokenses")), 'remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d': '%s' %(control.getSetting("login.tokenrem"))}
+            url = self._to_url_login("user/ajax/playing")
+            results = requests.post(url, data, cookies=cookie)
+        except:
+            dialog = xbmcgui.Dialog()
+            dialog.ok(control.lang(30203), control.lang(30204))

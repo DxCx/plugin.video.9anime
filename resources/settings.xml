@@ -4,11 +4,6 @@
 		<setting id="reverseorder" type="labelenum" label="Episode order" values="Ascending|Descending" default="Descending"/>
 		<setting id="displaystyle" type="labelenum" label="Display episodes as" values="Directory|List" default="List"/>
 		<setting id="searchhistory" type="labelenum" label="Enable search history" values="Yes|No" default="Yes"/>
-        	
-		<setting type="lsep" label="9anime Login"/>
-        	<setting id="9anime.username" type="text" label="Username:" default=""/>
-        	<setting id="9anime.password" type="text" option="hidden" label="Password:" default=""/>
-		<setting id="9anime.login" type="action" label="Click to Login..." option="close" action="RunPlugin(plugin://plugin.video.9anime/login)"/>
 	</category>
 	<category label="Servers">
 		<setting id="serverstreamango" type="bool" label="Use Streamango" default="true"/>
@@ -17,5 +12,15 @@
 		<setting id="serveropenload" type="bool" label="Use OpenLoad" default="true"/>
 		<setting id="prefres" label="Prefere Resolution" type="labelenum" values="360p|480p|720p|1080p" default="1080p"/>
 		<setting id="autoplay" label="Automatically play first result" type="bool" default="false"/>
+	</category>
+	<category label="9anime Login">
+		<setting id="9anime.eptrack" type="labelenum" label="Enable 9anime Episode Tracking" values="Yes|No" default="No"/>
+		<setting type="lsep" label="9anime Login"/>
+        	<setting id="9anime.username" type="text" label="Username:" default=""/>
+        	<setting id="9anime.password" type="text" option="hidden" label="Password:" default=""/>
+		<setting id="9anime.login" type="action" label="Click to Login..." option="close" action="RunPlugin(plugin://plugin.video.9anime/login)"/>		
+
+		<setting type="lsep" label="9anime Login TLD"/>
+		<setting id="9anime.login_tld" type="text" label="Domain Prefix" default="www8"/>
 	</category>
 </settings>

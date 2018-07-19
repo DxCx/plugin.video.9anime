@@ -24,6 +24,7 @@
 	<string id="30201">כשלון בהתחברות</string>
 	<string id="30202">התחברת מחדש, אם אינך רואה את הרשימה, צא ותכנס מחדש</string>
 	<string id="30203">סימניה</string>
+	<string id="30204">סנכרון נכשל, אנא נסה להתחבר מחדש</string>
 
 	<string id="30300">הכל</string>
 	<string id="30301">צופה</string>
@@ -33,5 +34,6 @@
 	<string id="30305">מתכנן לצפות</string>
 
 	<string id="40000">הוסף לרישמת צפיה: </string>
-	<string id="40001">הסר מרשימת צפיה</string>
+	<string id="40001">העבר לרשימת צפיה: </string>
+	<string id="40002">הסר רשומה</string>
 </strings>

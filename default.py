@@ -79,24 +79,51 @@ def bookmark_cm(u):
          (sysaddon, u)),
     ]
 
-def unbookmark_cm(u):
+def update_bookmark_cm(u):
     if not _BROWSER.is_logged_in():
         return []
 
     sysaddon = sys.argv[0]
+
+    move_to = control.lang(40001)
     return [
-        (control.lang(40001),
-         'RunPlugin(%s?action=bookmark&anime_id=%s&folder=remove)' % (sysaddon,
-                                                                      u)),
+        (move_to + control.lang(30301),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=watching)' %
+         (sysaddon, u)),
+        (move_to + control.lang(30302),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=watched)' %
+         (sysaddon, u)),
+        (move_to + control.lang(30303),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=onhold)' %
+         (sysaddon, u)),
+        (move_to + control.lang(30304),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=dropped)' %
+         (sysaddon, u)),
+        (move_to + control.lang(30305),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=planned)' %
+         (sysaddon, u)),
+        (control.lang(40002),
+         'RunPlugin(%s?action=update_bookmark&anime_id=%s&folder=remove)' %
+         (sysaddon,u)),
     ]
+
+def bookmark_episode_playing(link):
+    if not _BROWSER.is_logged_in():
+        return None
+
+    if "Yes" in control.getSetting('9anime.eptrack'):
+        return _BROWSER.episode_playing(link)
+    else:
+        return None
 
 @on_param('action', 'bookmark')
 def BOOKMARK_ACTION(payload, params):
     _BROWSER.bookmark(params['anime_id'], params['folder'])
 
-    # removing an entry, we need to refersh
-    if params['folder'] == 'remove':
-        control.refresh()
+@on_param('action', 'update_bookmark')
+def UPDATE_BOOKMARK_ACTION(payload, params):
+    _BROWSER.bookmark(params['anime_id'], params['folder'])
+    control.refresh()
 
 @route('login')
 def LOGIN(payload, params):
@@ -176,51 +203,51 @@ def WATCHLIST_PAGE(payload, params):
 
 @route('watchlist_all')
 def ALL(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_all(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_all(), update_bookmark_cm)
 
 @route('watchlist_all/*')
 def ALL_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_all(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_all(int(payload)), update_bookmark_cm)
 
 @route('watchlist_watching')
 def WATCHING(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_watching(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_watching(), update_bookmark_cm)
 
 @route('watchlist_watching/*')
 def WATCHING_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_watching(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_watching(int(payload)), update_bookmark_cm)
 
 @route('watchlist_completed')
 def WATCHED(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_completed(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_completed(), update_bookmark_cm)
 
 @route('watchlist_completed/*')
 def WATCHED_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_completed(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_completed(int(payload)), update_bookmark_cm)
 
 @route('watchlist_onhold')
 def ONHOLD(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_onhold(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_onhold(), update_bookmark_cm)
 
 @route('watchlist_onhold/*')
 def ONHOLD_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_onhold(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_onhold(int(payload)), update_bookmark_cm)
 
 @route('watchlist_dropped')
 def DROPPED(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_dropped(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_dropped(), update_bookmark_cm)
 
 @route('watchlist_dropped/*')
 def DROPPED_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_dropped(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_dropped(int(payload)), update_bookmark_cm)
 
 @route('watchlist_planned')
 def PLANNED(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_planned(), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_planned(), update_bookmark_cm)
 
 @route('watchlist_planned/*')
 def PLANNED_PAGES(payload, params):
-    return control.draw_items(_BROWSER.get_watchlist_planned(int(payload)), unbookmark_cm)
+    return control.draw_items(_BROWSER.get_watchlist_planned(int(payload)), update_bookmark_cm)
 
 @route('search_history')
 def SEARCH_HISTORY(payload, params):
@@ -293,7 +320,9 @@ def PLAY(payload, params):
             items = map(lambda x: utils.allocate_item(x[0], 'playlink&url=/'+x[1],'', False, ''), items)
             return control.draw_items(items)
     else:
-        return control.play_source(s.get_video_link())
+        res = control.play_source(s.get_video_link())
+        bookmark_episode_playing(sources[0])
+        return res
 
 @route('playlink*')
 def PLAY_SOURCE(payload, params):

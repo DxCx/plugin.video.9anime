@@ -24,6 +24,7 @@
 	<string id="30201">Login Error</string>
 	<string id="30202">Login Refresh Occured. If anime not visible, back out and reload</string>
 	<string id="30203">Bookmark</string>
+	<string id="30204">Unable to sync episode playing with 9anime Watchlist. Try relogin to sync episode</string>
 
 	<string id="30300">All</string>
 	<string id="30301">Watching</string>
@@ -33,5 +34,6 @@
 	<string id="30305">Plan To Watch</string>
 
 	<string id="40000">Add To </string>
-	<string id="40001">Remove Entry</string>
+	<string id="40001">Move To </string>
+	<string id="40002">Remove Entry</string>
 </strings>
