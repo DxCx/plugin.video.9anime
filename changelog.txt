@@ -1,3 +1,5 @@
+[B]0.0.47[/B]
+- adopt new site structure, fixes listing & playback.
 [B]0.0.46[/B]
 - Login feature update (By SwagOtaku)
 [B]0.0.45[/B]
