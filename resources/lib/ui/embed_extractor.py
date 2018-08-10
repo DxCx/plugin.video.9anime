@@ -9,7 +9,7 @@ import time
 from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
 
-_9ANIME_EXTRA_PARAM = 674
+_9ANIME_EXTRA_PARAM = 777
 
 def set_9anime_extra(new_val):
     global _9ANIME_EXTRA_PARAM
@@ -147,15 +147,20 @@ def __9anime_retry(ep_id, server_id, retry):
     return result_url
 
 def __extract_9anime(url, page_content, referer=None):
-    episode_id = url.rsplit('/', 1)[1]
     url_info = urlparse.urlparse(url)
+    episode_id = url_info.path.rsplit('/', 1)[-1]
+    qs = dict(urlparse.parse_qsl(url_info.query))
     domain = url_info.netloc
     scheme = url_info.scheme
 
     url_base = "%s://%s" % (scheme, domain)
 
-    server_id = NineAnimeUrlExtender.get_server_value(page_content)
     ts_value = NineAnimeUrlExtender.get_ts_value(page_content)
+    if not qs.has_key("server_id"):
+        raise Exception('missing server id')
+
+    server_id = int(qs["server_id"])
+
     #extra_param = NineAnimeUrlExtender.get_extra_url_parameter(episode_id, server_id, ts_value)
     extra_param = _9ANIME_EXTRA_PARAM
 
