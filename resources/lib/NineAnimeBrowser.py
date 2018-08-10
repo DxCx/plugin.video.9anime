@@ -34,19 +34,12 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _EPISODE_IMAGE_RE = \
     re.compile('<div class="thumb col-md-5 hidden-sm hidden-xs"> <img src="(.+?)\"', re.DOTALL)
     _EPISODE_PANEL_RE = \
-    re.compile("\<div\sclass=\"widget\sservers\"[^>]+?\>(.+?\s\<\/div\>\s\<\/div\>)\s\<\/div\>",
-               re.DOTALL)
+    re.compile("\<div\sclass=\"widget\sservers\"\>\s(.+)\<\/div\>", re.DOTALL)
     _EPISODE_PANEL_POST_RE = \
-    re.compile("\<div\sclass=\"widget-title\"\>\s(.+?)\s\<\/div\>\s\<div\sclass=\"widget-body\"\>\s(.+?\s\<\/div\>)\s\<\/div\>",
-               re.DOTALL)
+    re.compile("\<div\sclass=\"widget-title\"\>\s+?(.+)\s+?\<\/div\>\s+?\<div\sclass=\"widget-body\"\>\s+?(.+)\s+?\<\/div\>", re.DOTALL)
     _SERVER_NAMES_RE = \
     re.compile("\<span\sclass=\"tab\s\w*\"\sdata-name=\"(\d+)\">([^<]+?)</span>",
                re.DOTALL)
-    _EPISODE_BOXES_RE = \
-    re.compile("\<div\sclass=\"server\s\w+\"\sdata-name=\"(\d+)\"[^>]+?>(.+?)</ul>\s</div>",
-               re.DOTALL)
-
-    _EPISODE_LINK_RE = re.compile("<li><div><a\shref=\"/([-\w\s\d]+?)/(\d+?)\"\sclass=\"anm_det_pop\"><strong>(.+?)</strong></a><i\sclass=\"anititle\">(.+?)</i>", re.DOTALL)
 
     def _get_by_filter(self, filterName, filterData, page=1):
         data = dict(filterData)
@@ -139,33 +132,51 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
         all_results += self._handle_watchlist_paging(results, base_plugin_url, page)
         return all_results
 
-    def _format_episode(self, anime_url, extra):
+    def _format_episode(self, anime_url, extra, server_id):
         def f(einfo):
+            source = self._to_url("watch/%s/%s?server_id=%s" % (anime_url,
+                                                                einfo.attrs["data-id"],
+                                                                server_id))
             base = {}
             base.update(extra)
             base.update({
-                "id": einfo[2],
-                "url": "play/" + anime_url + "/" + einfo[2],
-                "source": self._to_url("watch/%s/%s" % (anime_url, einfo[0])),
-                "name": "Episode %s (%s)" % (einfo[4], einfo[3])
+                "id": einfo.attrs["data-comment"],
+                "url": "play/" + anime_url + "/" + einfo.attrs["data-comment"],
+                "source": source,
+                "name": "Episode %s" % (einfo.string)
             })
             return base
 
         return f
 
+    def _url_to_film(self, anime_url):
+        anime_code = anime_url.split(".")[-1]
+        return self._to_url("/ajax/film/servers/%s" % anime_code)
+
     def _get_anime_info(self, anime_url):
         resp = self._get_request(self._to_url("/watch/%s" % anime_url))
         extra_data = self._extract_anime_extra(resp)
+
+        servers_url = self._url_to_film(anime_url)
+        resp = json.loads(self._get_request(servers_url))["html"]
 
         # Strip the server into boxes
         episodes_panel = self._EPISODE_PANEL_RE.findall(resp)[0]
         servers_text, epi_text = self._EPISODE_PANEL_POST_RE.findall(episodes_panel)[0]
         snames = dict(self._SERVER_NAMES_RE.findall(servers_text))
 
-        episodes_boxes = self._EPISODE_BOXES_RE.findall(epi_text)
-        servers = [(snames[i[0]], self._EPISODES_RE.findall(i[1])) for i in episodes_boxes]
-        servers = dict([(i[0], map(self._format_episode(anime_url, extra_data),
-                                   i[1][::-1])) for i in servers])
+        # TODO: Try and soup above as well.
+        soup = bs.BeautifulSoup(epi_text, 'html.parser')
+        episodes_boxes = soup.find_all('div', attrs={"class":
+                         lambda x: x and x.startswith("server ")})
+
+        servers = [(snames[i.attrs["data-id"]],
+                   i.attrs["data-id"], i.find_all('a')) for i in episodes_boxes]
+
+        servers = dict([(i[0],
+                         map(self._format_episode(anime_url, extra_data, i[1]),
+                             i[2][::-1]))
+                        for i in servers])
         return servers
 
     def search_site(self, search_string, page=1):
