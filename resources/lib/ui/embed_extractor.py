@@ -122,7 +122,7 @@ def __extract_streamango(url, page_content, referer=None):
     return [(res, url)]
 
 def __extract_rapidvideo(url, page_content, referer=None):
-    SOURCES_RE = re.compile("\<a\shref=\".+q=(.+?)\"\>")
+    SOURCES_RE = re.compile("\<a\shref=\".+&q=(.+?)\"\>")
     source_labels = SOURCES_RE.findall(page_content)
     sources = [
         (label, __final_resolve_rapidvideo(url, label, referer))
@@ -411,7 +411,8 @@ __register_extractor(["https://mcloud.to/embed",
                      __extract_mycloud)
 
 __register_extractor(["https://www.rapidvideo.com/e/"],
-                     __extract_rapidvideo)
+                     __extract_rapidvideo,
+                     lambda x: x.replace('/e/', '/v/'))
 
 __register_extractor(["https://streamango.com/embed/"],
                      __extract_streamango)
