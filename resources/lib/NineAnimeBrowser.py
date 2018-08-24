@@ -7,7 +7,8 @@ from ui import control
 import json,xbmcgui,xbmcaddon,requests,xbmc,bs4 as bs
 
 from ui.embed_extractor import set_9anime_extra
-set_9anime_extra(777)
+set_9anime_extra(744)
+SERVERS_TOKEN = 648
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
     _BASE_URL = "https://9anime.is"
@@ -151,7 +152,8 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
 
     def _url_to_film(self, anime_url):
         anime_code = anime_url.split(".")[-1]
-        return self._to_url("/ajax/film/servers/%s" % anime_code)
+        return self._to_url("/ajax/film/servers/%s?_=%d" %
+                            (anime_code, SERVERS_TOKEN))
 
     def _get_anime_info(self, anime_url):
         resp = self._get_request(self._to_url("/watch/%s" % anime_url))
