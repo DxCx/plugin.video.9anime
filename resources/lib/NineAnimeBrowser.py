@@ -11,7 +11,7 @@ set_9anime_extra(744)
 SERVERS_TOKEN = 648
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
-    _BASE_URL = "https://9anime.is"
+    _BASE_URL = "https://9anime.to"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<div\sclass=\"inner\">\s<a\shref=\".+?/watch/(.+?)\"\s[^>]+?>\s<img\ssrc=\"(.+?)\"\salt=\"([^\"]+?)\"[^>]*?>.+?<\/div>\s<\/div>", re.DOTALL)
     _ANIME_WATCHLIST_VIEW_ITEMS_RE = \
