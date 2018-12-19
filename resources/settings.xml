@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="General">
+		<setting id="baseurl" type="text" label="Base URL" default="https://9anime.to"/>
 		<setting id="reverseorder" type="labelenum" label="Episode order" values="Ascending|Descending" default="Descending"/>
 		<setting id="displaystyle" type="labelenum" label="Display episodes as" values="Directory|List" default="List"/>
 		<setting id="searchhistory" type="labelenum" label="Enable search history" values="Yes|No" default="Yes"/>

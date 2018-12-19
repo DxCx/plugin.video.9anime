@@ -37,7 +37,7 @@ WATCHLIST_ITEMS = [
 
 HISTORY_DELIM = ":_:"
 
-_BROWSER = NineAnimeBrowser()
+_BROWSER = NineAnimeBrowser(control.getSetting('baseurl'))
 control.setContent('tvshows');
 
 def isDirectoryStyle():
