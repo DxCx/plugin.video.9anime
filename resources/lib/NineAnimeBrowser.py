@@ -6,12 +6,12 @@ from ui import http
 from ui import control
 import json,xbmcgui,xbmcaddon,requests,xbmc,bs4 as bs
 
-from ui.embed_extractor import set_9anime_extra
+from ui.embed_extractor import set_9anime_extra, register_domain
+
 set_9anime_extra(744)
 SERVERS_TOKEN = 648
 
 class NineAnimeBrowser(BrowserBase.BrowserBase):
-    _BASE_URL = "https://9anime.to"
     _ANIME_VIEW_ITEMS_RE = \
     re.compile("<div\sclass=\"item\">\s<div\sclass=\"inner\">\s<a\shref=\".+?/watch/(.+?)\"\s[^>]+?>\s<img\ssrc=\"(.+?)\"\salt=\"([^\"]+?)\"[^>]*?>.+?<\/div>\s<\/div>", re.DOTALL)
     _ANIME_WATCHLIST_VIEW_ITEMS_RE = \
@@ -41,6 +41,14 @@ class NineAnimeBrowser(BrowserBase.BrowserBase):
     _SERVER_NAMES_RE = \
     re.compile("\<span\sclass=\"tab\s\w*\"\sdata-name=\"(\d+)\">([^<]+?)</span>",
                re.DOTALL)
+
+    def __init__(self, base_url="https://9anime.to"):
+        super(NineAnimeBrowser, self).__init__()
+        self._BASE_URL = base_url
+        self._init_domains()
+
+    def _init_domains(self):
+        register_domain("9anime://", self._BASE_URL)
 
     def _get_by_filter(self, filterName, filterData, page=1):
         data = dict(filterData)

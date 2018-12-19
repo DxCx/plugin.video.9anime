@@ -8,8 +8,15 @@ import time
 
 from NineAnimeUrlExtender import NineAnimeUrlExtender
 _EMBED_EXTRACTORS = {}
+_DOMAINS = {}
 
 _9ANIME_EXTRA_PARAM = 777
+
+def register_domain(src, dest):
+    if not dest.endswith("/"):
+        dest += "/"
+
+    _DOMAINS[src] = dest
 
 def set_9anime_extra(new_val):
     global _9ANIME_EXTRA_PARAM
@@ -18,9 +25,14 @@ def set_9anime_extra(new_val):
 def load_video_from_url(in_url):
     found_extractor = None
 
-    for extractor in _EMBED_EXTRACTORS.keys():
+    for extractor, extract_func in _EMBED_EXTRACTORS.iteritems():
+        for domain in _DOMAINS.keys():
+            if extractor.startswith(domain):
+                extractor = extractor.replace(domain, _DOMAINS[domain])
+                break
+
         if in_url.startswith(extractor):
-            found_extractor = _EMBED_EXTRACTORS[extractor]
+            found_extractor = extract_func
             break
 
     if found_extractor is None:
@@ -370,13 +382,7 @@ def __extractor_factory(regex, double_ref=False, match=0, debug=False):
     return f
 
 __register_extractor([
-    "https://9anime.to/watch/",
-    "https://9anime.tv/watch/",
-    "https://9anime.is/watch/",
-
-    "http://9anime.to/watch/",
-    "http://9anime.tv/watch/",
-    "http://9anime.is/watch/",
+    "9anime://watch/",
 ], __extract_9anime)
 
 __register_extractor("http://ww1.animeram.cc", __animeram_factory)
