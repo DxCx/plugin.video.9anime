@@ -1,4 +1,5 @@
 # plugin.video.9anime - 9Anime plugin for kodi
+## This addon is deprecated but usable. [Click here for more info.](https://github.com/DxCx/plugin.video.9anime/issues/352)
 
 Kodi Plugin that lets you watch almost all animes HD and for free.
 **This Plugin Requires Kodi Version 17.0+**
