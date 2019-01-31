@@ -1,5 +1,6 @@
 # plugin.video.9anime - 9Anime plugin for kodi
 ## This addon is deprecated but usable. [Click here for more info.](https://github.com/DxCx/plugin.video.9anime/issues/352)
+## You can beta test our new anime addon, WonderfulSubs for kodi. [Click here for more info.](https://blog.wonderfulsubs.com/2019/01/wonderfulsubs-for-kodi-add-on-beta-sign.html)
 
 Kodi Plugin that lets you watch almost all animes HD and for free.
 **This Plugin Requires Kodi Version 17.0+**
